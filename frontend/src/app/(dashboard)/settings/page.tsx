@@ -6,7 +6,7 @@ import { useAuth } from '@/lib/auth-context';
 
 export default function SettingsPage() {
   const { user, org } = useAuth();
-  const [activeTab, setActiveTab] = useState<'organization' | 'team' | 'security' | 'audit'>('organization');
+  const [activeTab, setActiveTab] = useState<'organization' | 'team' | 'security' | 'audit' | 'plan'>('organization');
 
   const auditLogs = [
     { id: '1', action: 'USER_LOGIN', user: 'Alex Mercer', ip: '192.168.1.1', timestamp: new Date().toLocaleString() },
