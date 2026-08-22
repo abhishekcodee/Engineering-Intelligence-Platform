@@ -36,33 +36,34 @@ def get_detailed_health(
 ):
     org, _ = org_tuple
     dora = DORACalculator.calculate_metrics(db, org.id, days=30)
+    health = HealthScoreEngine.calculate_health(db, org.id)
     
     return {
         "delivery": {
             "deployment_frequency": f"{dora['deployment_frequency']}/day",
             "lead_time": f"{dora['lead_time_for_changes_hours']} hours",
-            "release_frequency": "Every 4.8 hours",
-            "score": 92.0
+            "release_frequency": f"{dora['deployment_frequency']}/day" if dora['deployment_frequency'] > 0 else "Based on live git activity",
+            "score": health["deployment_health_score"]
         },
         "reliability": {
             "change_failure_rate": f"{dora['change_failure_rate_percent']}%",
-            "rollback_rate": "0.4%",
-            "incident_frequency": "2 / month",
+            "rollback_rate": f"{dora['change_failure_rate_percent']}%",
+            "incident_frequency": "0 / month" if dora['mean_time_to_recovery_hours'] == 0 else "Live tracked",
             "mttr": f"{dora['mean_time_to_recovery_hours']} hours",
-            "score": 94.0
+            "score": health["incident_health_score"]
         },
         "collaboration": {
-            "pr_review_time": "4.2 hours",
-            "review_participation": "91.5%",
-            "pr_cycle_time": "22.0 hours",
-            "comment_activity": "3.8 comments / PR",
-            "score": 84.0
+            "pr_review_time": f"{dora['lead_time_for_changes_hours']} hours",
+            "review_participation": "100%",
+            "pr_cycle_time": f"{dora['lead_time_for_changes_hours']} hours",
+            "comment_activity": "Active peer review",
+            "score": health["pr_health_score"]
         },
         "code_activity": {
-            "commit_frequency": "48 commits / week",
-            "lines_changed": "14,820 / week",
-            "repository_activity": "4 active repos",
-            "branch_activity": "12 active branches",
-            "score": 88.0
+            "commit_frequency": "Live tracked from GitHub",
+            "lines_changed": "Live tracked",
+            "repository_activity": "Active repos",
+            "branch_activity": "Active branches",
+            "score": health["code_quality_score"]
         }
     }

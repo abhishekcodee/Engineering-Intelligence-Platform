@@ -10,37 +10,56 @@ class DORACalculator:
     def calculate_metrics(db: Session, organization_id: str, days: int = 30) -> dict:
         cutoff = datetime.utcnow() - timedelta(days=days)
         
-        # 1. Deployment Frequency
+        # 1. Deployment Frequency (or Commit frequency if deployments not yet configured)
         deployments_count = db.query(Deployment).join(Deployment.repository).filter(
-            Deployment.repository.has(organization_id=organization_id),
+            Repository.organization_id == organization_id,
             Deployment.deployed_at >= cutoff,
             Deployment.status == "success"
         ).count()
         
-        df_per_day = round(deployments_count / max(days, 1), 2)
+        commits_count = db.query(Commit).join(Commit.repository).filter(
+            Repository.organization_id == organization_id,
+            Commit.committed_at >= cutoff
+        ).count()
+        
+        if deployments_count > 0:
+            df_per_day = round(deployments_count / max(days, 1), 2)
+        elif commits_count > 0:
+            df_per_day = round(commits_count / max(days, 1), 2)
+        else:
+            df_per_day = 0.0
+            
         if df_per_day >= 1.0:
             df_rating = "Elite"
         elif df_per_day >= 0.2:
             df_rating = "High"
         elif df_per_day >= 0.05:
             df_rating = "Medium"
-        else:
+        elif df_per_day > 0:
             df_rating = "Low"
+        else:
+            df_rating = "N/A"
             
         # 2. Change Failure Rate
         total_deploys = db.query(Deployment).join(Deployment.repository).filter(
-            Deployment.repository.has(organization_id=organization_id),
+            Repository.organization_id == organization_id,
             Deployment.deployed_at >= cutoff
         ).count()
         
         failed_deploys = db.query(Deployment).join(Deployment.repository).filter(
-            Deployment.repository.has(organization_id=organization_id),
+            Repository.organization_id == organization_id,
             Deployment.deployed_at >= cutoff,
             Deployment.status.in_(["failure", "rollback"])
         ).count()
         
-        cfr_percent = round((failed_deploys / max(total_deploys, 1)) * 100, 1) if total_deploys > 0 else 3.2
-        if cfr_percent <= 5.0:
+        if total_deploys > 0:
+            cfr_percent = round((failed_deploys / total_deploys) * 100, 1)
+        else:
+            cfr_percent = 0.0
+            
+        if total_deploys == 0:
+            cfr_rating = "N/A"
+        elif cfr_percent <= 5.0:
             cfr_rating = "Elite"
         elif cfr_percent <= 15.0:
             cfr_rating = "High"
@@ -51,17 +70,23 @@ class DORACalculator:
             
         # 3. Lead Time for Changes (average PR cycle time)
         avg_cycle = db.query(func.avg(PullRequest.cycle_time_hours)).join(PullRequest.repository).filter(
-            PullRequest.repository.has(organization_id=organization_id),
+            Repository.organization_id == organization_id,
             PullRequest.created_at >= cutoff,
             PullRequest.status == "merged"
         ).scalar()
         
-        ltc_hours = round(float(avg_cycle or 18.5), 1)
-        if ltc_hours <= 24:
+        if avg_cycle is not None:
+            ltc_hours = round(float(avg_cycle), 1)
+        else:
+            ltc_hours = 0.0
+            
+        if ltc_hours <= 0:
+            ltc_rating = "N/A"
+        elif ltc_hours <= 24:
             ltc_rating = "Elite"
-        elif ltc_hours <= 168:  # 1 week
+        elif ltc_hours <= 168:
             ltc_rating = "High"
-        elif ltc_hours <= 720:  # 1 month
+        elif ltc_hours <= 720:
             ltc_rating = "Medium"
         else:
             ltc_rating = "Low"
@@ -73,8 +98,14 @@ class DORACalculator:
             Incident.status == "resolved"
         ).scalar()
         
-        mttr_hours = round(float(avg_mttr or 84.0) / 60.0, 1)
-        if mttr_hours <= 1.0:
+        if avg_mttr is not None:
+            mttr_hours = round(float(avg_mttr) / 60.0, 1)
+        else:
+            mttr_hours = 0.0
+            
+        if mttr_hours <= 0:
+            mttr_rating = "N/A"
+        elif mttr_hours <= 1.0:
             mttr_rating = "Elite"
         elif mttr_hours <= 24.0:
             mttr_rating = "High"
@@ -93,7 +124,7 @@ class DORACalculator:
             "mean_time_to_recovery_hours": mttr_hours,
             "mttr_rating": mttr_rating,
             "trend_history": [
-                {"date": (datetime.utcnow() - timedelta(days=i)).strftime("%Y-%m-%d"), "deployments": round(df_per_day + (i % 3) * 0.4, 1), "lead_time": round(ltc_hours + (i % 4) - 2, 1)}
+                {"date": (datetime.utcnow() - timedelta(days=i)).strftime("%Y-%m-%d"), "deployments": round(max(0, df_per_day), 1), "lead_time": round(max(0, ltc_hours), 1)}
                 for i in range(14, 0, -1)
             ]
         }
