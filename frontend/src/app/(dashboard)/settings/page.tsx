@@ -32,6 +32,7 @@ export default function SettingsPage() {
           { id: 'team', label: 'Team Members', icon: Users },
           { id: 'security', label: 'Security & OAuth', icon: Lock },
           { id: 'audit', label: 'Audit Logs', icon: History },
+          { id: 'plan', label: 'Plan & License (100% Free)', icon: Shield },
         ].map((tab) => {
           const Icon = tab.icon;
           return (
@@ -163,6 +164,42 @@ export default function SettingsPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {activeTab === 'plan' && (
+          <div className="space-y-6 text-xs">
+            <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 flex items-center justify-between">
+              <div>
+                <h4 className="font-bold text-sm text-emerald-300">100% Free & Open-Source License</h4>
+                <p className="text-xs text-emerald-400/80 mt-0.5">
+                  All features, AI analytics, DORA metrics, integrations, and report generators are 100% free with no paid tiers or paywalls.
+                </p>
+              </div>
+              <span className="px-3 py-1 rounded-full bg-emerald-500 text-zinc-950 font-extrabold text-[11px] uppercase tracking-wider">
+                UNLIMITED FREE
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 space-y-1">
+                <span className="text-zinc-400 text-[11px]">Monthly Subscription</span>
+                <p className="text-lg font-bold text-emerald-500">$0 / Month</p>
+                <p className="text-[10px] text-zinc-500">Free forever for all users</p>
+              </div>
+
+              <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 space-y-1">
+                <span className="text-zinc-400 text-[11px]">Developer Seats</span>
+                <p className="text-lg font-bold text-zinc-900 dark:text-white">Unlimited</p>
+                <p className="text-[10px] text-zinc-500">No per-user licensing fees</p>
+              </div>
+
+              <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 space-y-1">
+                <span className="text-zinc-400 text-[11px]">Repository Limit</span>
+                <p className="text-lg font-bold text-zinc-900 dark:text-white">Unlimited</p>
+                <p className="text-[10px] text-zinc-500">Connect unlimited GitHub repos</p>
+              </div>
+            </div>
           </div>
         )}
       </div>

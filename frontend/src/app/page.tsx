@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Zap, ArrowRight, ShieldCheck, Sparkles, GitPullRequest, Rocket, Activity, CheckCircle2, Lock, Bot } from 'lucide-react';
+import { Zap, ArrowRight, ShieldCheck, Sparkles, GitPullRequest, Rocket, Activity, CheckCircle2, Lock, Bot, Unlock, Gift } from 'lucide-react';
 
 export default function PublicLandingPage() {
   return (
@@ -14,6 +14,9 @@ export default function PublicLandingPage() {
             <Zap className="h-5 w-5 text-white" />
           </div>
           <span className="font-bold tracking-tight text-lg text-white">DevPulse</span>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+            100% Free
+          </span>
         </Link>
 
         <div className="flex items-center gap-4">
@@ -34,9 +37,9 @@ export default function PublicLandingPage() {
 
       {/* Hero Section */}
       <section className="relative pt-24 pb-16 px-6 lg:px-12 text-center max-w-5xl mx-auto space-y-6">
-        <div className="inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-3.5 py-1 text-xs font-semibold text-indigo-400">
-          <Sparkles className="h-3.5 w-3.5" />
-          <span>Next-Generation Engineering Intelligence SaaS</span>
+        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1 text-xs font-semibold text-emerald-400">
+          <Unlock className="h-3.5 w-3.5" />
+          <span>100% Free & Open-Source Engineering Intelligence</span>
         </div>
 
         <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight text-white">
@@ -44,7 +47,7 @@ export default function PublicLandingPage() {
         </h1>
 
         <p className="text-sm sm:text-base text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-          Connect your software development workflow, measure real DORA performance, prevent pull request bottlenecks, and turn dev activity into actionable AI insights.
+          Connect your software development workflow, measure real DORA performance, prevent pull request bottlenecks, and turn dev activity into actionable AI insights. All features are completely free forever.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
@@ -52,7 +55,7 @@ export default function PublicLandingPage() {
             href="/register"
             className="w-full sm:w-auto px-6 py-3 rounded-xl bg-indigo-600 text-sm font-semibold text-white hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2"
           >
-            Get Started Free <ArrowRight className="h-4 w-4" />
+            Get Started (100% Free) <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
             href="/overview"
@@ -60,6 +63,26 @@ export default function PublicLandingPage() {
           >
             Explore Live Demo
           </Link>
+        </div>
+
+        {/* Free Banner Guarantee */}
+        <div className="pt-6 flex flex-wrap items-center justify-center gap-6 text-xs text-zinc-400">
+          <div className="flex items-center gap-2 text-emerald-400 font-medium">
+            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+            <span>Zero Subscription Fees</span>
+          </div>
+          <div className="flex items-center gap-2 text-emerald-400 font-medium">
+            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+            <span>No Credit Card Required</span>
+          </div>
+          <div className="flex items-center gap-2 text-emerald-400 font-medium">
+            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+            <span>Unlimited Developers & Repos</span>
+          </div>
+          <div className="flex items-center gap-2 text-emerald-400 font-medium">
+            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+            <span>Self-Host Anywhere</span>
+          </div>
         </div>
       </section>
 
@@ -99,7 +122,7 @@ export default function PublicLandingPage() {
 
       {/* Footer */}
       <footer className="py-8 px-6 text-center border-t border-zinc-800/60 text-xs text-zinc-500">
-        DevPulse SaaS Platform © 2026. Built for high-performance software teams.
+        DevPulse Platform — 100% Free & Open-Source Community Edition © 2026. Built for high-performance software teams.
       </footer>
     </div>
   );

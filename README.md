@@ -1,6 +1,6 @@
-# DevPulse - Engineering Intelligence Platform
+# DevPulse - 100% Free & Open-Source Engineering Intelligence Platform
 
-DevPulse is an enterprise-grade, multi-tenant Engineering Intelligence SaaS platform that connects software development tools (GitHub, Jira, Slack, CI/CD) and converts raw engineering activity into real-time DORA performance metrics, PR risk intelligence, developer growth insights, sprint prediction, deployment analytics, and AI-powered executive reports.
+DevPulse is a 100% Free & Open-Source Engineering Intelligence platform that connects software development tools (GitHub, Jira, Slack, CI/CD) and converts raw engineering activity into real-time DORA performance metrics, PR risk intelligence, developer growth insights, sprint prediction, deployment analytics, and AI-powered executive reports. All features are completely free with zero subscription fees or paywalls.
 
 ---
 
