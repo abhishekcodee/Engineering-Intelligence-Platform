@@ -5,12 +5,14 @@ if (isGithubActions && process.env.GITHUB_REPOSITORY) {
   repo = '/' + process.env.GITHUB_REPOSITORY.split('/')[1];
 }
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || repo || '';
+
 const nextConfig = {
   reactStrictMode: true,
   output: 'export',
   trailingSlash: true,
-  basePath: process.env.NEXT_PUBLIC_BASE_PATH || repo || undefined,
-  assetPrefix: process.env.NEXT_PUBLIC_BASE_PATH || (repo ? `${repo}/` : undefined),
+  basePath: basePath || undefined,
+  assetPrefix: basePath || undefined,
   images: {
     unoptimized: true,
     remotePatterns: [
