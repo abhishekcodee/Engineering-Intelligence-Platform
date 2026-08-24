@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { FileSpreadsheet, Download, Sparkles, CheckCircle2, ArrowRight } from 'lucide-react';
-import { fetchApi } from '@/lib/api';
+import { fetchApi, API_BASE_URL } from '@/lib/api';
 
 export default function ReportsPage() {
   const [report, setReport] = useState<any>(null);
@@ -36,7 +36,7 @@ export default function ReportsPage() {
   };
 
   const handleExportCsv = () => {
-    window.open('http://localhost:8000/api/v1/reports/export/csv', '_blank');
+    window.open(`${API_BASE_URL}/reports/export/csv`, '_blank');
   };
 
   return (
