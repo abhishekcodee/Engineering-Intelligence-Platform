@@ -7,15 +7,14 @@ services:
 
     buildCommand: pip install -r backend/requirements.txt
     startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
-
     healthCheckPath: /health
 
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.8
+        value: "3.11.8"
 
       - key: ENVIRONMENT
-        value: production
+        value: "production"
 
       - key: DATABASE_URL
         fromDatabase:
@@ -25,9 +24,8 @@ services:
       - key: SECRET_KEY
         generateValue: true
 
-- key: CORS_ORIGINS
-  value: >-
-    ["https://abhishekcodee.github.io"]
+      - key: CORS_ORIGINS
+        value: '["https://abhishekcodee.github.io"]'
 
 databases:
   - name: devpulse-db
