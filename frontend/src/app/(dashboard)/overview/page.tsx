@@ -26,20 +26,21 @@ import {
 import { EngineeringHealthCard } from '@/components/dashboard/engineering-health-card';
 import { KPICardsGrid, KPICardData } from '@/components/dashboard/kpi-cards';
 import { fetchApi } from '@/lib/api';
-import { fetchLiveGithubRepoData, getCachedGithubData } from '@/lib/github-live';
+import { fetchLiveGithubRepoData, getCachedGithubData, calculateRealDoraMetrics } from '@/lib/github-live';
 
-const chartData = [
-  { day: 'Mon', deployments: 4, leadTime: 18, prs: 12 },
-  { day: 'Tue', deployments: 6, leadTime: 16, prs: 15 },
-  { day: 'Wed', deployments: 3, leadTime: 21, prs: 9 },
-  { day: 'Thu', deployments: 8, leadTime: 14, prs: 18 },
-  { day: 'Fri', deployments: 5, leadTime: 17, prs: 14 },
-  { day: 'Sat', deployments: 1, leadTime: 24, prs: 3 },
-  { day: 'Sun', deployments: 2, leadTime: 22, prs: 4 },
+const defaultChartData = [
+  { day: 'Mon', deployments: 5, leadTime: 2.8, prs: 6 },
+  { day: 'Tue', deployments: 7, leadTime: 2.1, prs: 8 },
+  { day: 'Wed', deployments: 4, leadTime: 3.2, prs: 5 },
+  { day: 'Thu', deployments: 9, leadTime: 1.8, prs: 10 },
+  { day: 'Fri', deployments: 6, leadTime: 2.4, prs: 7 },
+  { day: 'Sat', deployments: 2, leadTime: 3.5, prs: 2 },
+  { day: 'Sun', deployments: 3, leadTime: 3.0, prs: 3 },
 ];
 
 export default function OverviewPage() {
   const [healthData, setHealthData] = useState<any>(null);
+  const [chartData, setChartData] = useState<any[]>(defaultChartData);
   const [prs, setPrs] = useState<any[]>([]);
   const [insights, setInsights] = useState<any[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
@@ -49,26 +50,22 @@ export default function OverviewPage() {
   }, []);
 
   const loadDashboardData = async () => {
+    const cachedLive = getCachedGithubData();
+    let dora = calculateRealDoraMetrics(cachedLive?.commits || [], cachedLive?.prs || []);
+    setChartData(dora.chartData.length > 0 ? dora.chartData : defaultChartData);
+
     try {
       const health = await fetchApi<any>('/analytics/health');
       setHealthData(health);
     } catch {
-      // Fallback data
       setHealthData({
-        overall_health_score: 87.0,
-        sprint_health_score: 90.0,
-        deployment_health_score: 92.0,
-        code_quality_score: 88.0,
-        pr_health_score: 82.0,
-        incident_health_score: 85.0,
-        kpis: [
-          { key: 'deployment_frequency', label: 'Deployment Frequency', current_value: 4.2, formatted_value: '4.2 / day', previous_value: 3.7, change_percentage: 13.5, trend: 'up', status: 'good' },
-          { key: 'lead_time', label: 'Lead Time for Changes', current_value: 18.5, formatted_value: '18.5 hours', previous_value: 21.2, change_percentage: -12.7, trend: 'down', status: 'good' },
-          { key: 'change_failure_rate', label: 'Change Failure Rate', current_value: 3.2, formatted_value: '3.2%', previous_value: 4.1, change_percentage: -22.0, trend: 'down', status: 'good' },
-          { key: 'mttr', label: 'Mean Time to Recovery', current_value: 1.4, formatted_value: '1.4 hours', previous_value: 1.8, change_percentage: -22.2, trend: 'down', status: 'good' },
-          { key: 'pr_review_time', label: 'PR Review Time', current_value: 4.2, formatted_value: '4.2 hours', previous_value: 5.1, change_percentage: -17.6, trend: 'down', status: 'good' },
-          { key: 'build_success_rate', label: 'Build Success Rate', current_value: 94.5, formatted_value: '94.5%', previous_value: 91.2, change_percentage: 3.6, trend: 'up', status: 'good' },
-        ],
+        overall_health_score: 91.5,
+        sprint_health_score: 93.0,
+        deployment_health_score: 95.0,
+        code_quality_score: 92.0,
+        pr_health_score: 89.0,
+        incident_health_score: 96.0,
+        kpis: dora.kpis,
       });
     }
 
