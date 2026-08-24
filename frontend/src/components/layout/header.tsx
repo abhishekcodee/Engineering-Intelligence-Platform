@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { navItems } from './sidebar';
+import { getRealNotifications } from '@/lib/github-live';
 
 export function Header() {
   const pathname = usePathname();
@@ -25,10 +26,13 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     setIsMounted(true);
-  }, []);
+    const { unreadCount: count } = getRealNotifications();
+    setUnreadCount(count);
+  }, [pathname]);
 
   const getPageTitle = () => {
     const item = navItems.find(
@@ -86,9 +90,14 @@ export function Header() {
         <Link
           href="/alerts"
           className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
+          title="Engineering Notifications & Alerts"
         >
           <Bell className="h-4 w-4" />
-          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-zinc-950" />
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[9px] font-bold text-white ring-2 ring-white dark:ring-zinc-950">
+              {unreadCount}
+            </span>
+          )}
         </Link>
 
         {/* User Profile */}
@@ -204,9 +213,9 @@ export function Header() {
                         {item.badge}
                       </span>
                     )}
-                    {item.badgeCount && (
+                    {item.isAlerts && unreadCount > 0 && (
                       <span className="rounded-full bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-amber-400">
-                        {item.badgeCount}
+                        {unreadCount}
                       </span>
                     )}
                   </Link>

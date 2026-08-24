@@ -1,6 +1,4 @@
-'use client';
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -24,6 +22,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
+import { getRealNotifications } from '@/lib/github-live';
 
 export const navItems = [
   { label: 'Overview', href: '/overview', icon: LayoutDashboard },
@@ -37,7 +36,7 @@ export const navItems = [
   { label: 'Incidents', href: '/incidents', icon: AlertTriangle },
   { label: 'Reports', href: '/reports', icon: FileSpreadsheet },
   { label: 'AI Assistant', href: '/ai-assistant', icon: Bot, isAi: true },
-  { label: 'Alerts', href: '/alerts', icon: BellRing, badgeCount: 2 },
+  { label: 'Alerts', href: '/alerts', icon: BellRing, isAlerts: true },
   { label: 'Integrations', href: '/integrations', icon: Plug },
   { label: 'Settings', href: '/settings', icon: Settings },
 ];
@@ -46,6 +45,12 @@ export function Sidebar() {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { org } = useAuth();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const { unreadCount: count } = getRealNotifications();
+    setUnreadCount(count);
+  }, [pathname]);
 
   return (
     <aside
@@ -98,9 +103,9 @@ export function Sidebar() {
                   {item.badge}
                 </span>
               )}
-              {!isCollapsed && item.badgeCount && (
+              {!isCollapsed && item.isAlerts && unreadCount > 0 && (
                 <span className="rounded-full bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
-                  {item.badgeCount}
+                  {unreadCount}
                 </span>
               )}
             </Link>

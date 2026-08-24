@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { BellRing, AlertTriangle, CheckCircle2, ShieldCheck, Settings2 } from 'lucide-react';
 import { fetchApi } from '@/lib/api';
-import { getCachedGithubData } from '@/lib/github-live';
+import { getRealNotifications, markNotificationAsRead } from '@/lib/github-live';
 
 export default function AlertsPage() {
   const [alerts, setAlerts] = useState<any[]>([]);
@@ -12,43 +12,20 @@ export default function AlertsPage() {
     fetchApi<any[]>('/alerts')
       .then((data) => setAlerts(data))
       .catch(() => {
-        const cachedLive = getCachedGithubData();
-        const repoName = cachedLive?.repo?.full_name || 'abhishekcodee/Engineering-Intelligence-Platform';
-        const commitCount = cachedLive?.commits?.length || 23;
-
-        setAlerts([
-          {
-            id: 'alt-live-1',
-            type: 'GITHUB_LIVE_SYNC',
-            title: 'Live GitHub Repository Connected',
-            message: `Real-time synchronization active for ${repoName}. Ingested ${commitCount} commits by Abhishek Upadhyay (@abhishekcodee).`,
-            severity: 'info',
-            status: 'acknowledged',
-            created_at: cachedLive?.repo?.updated_at || new Date().toISOString(),
-          },
-          {
-            id: 'alt-live-2',
-            type: 'DORA_OPTIMIZATION',
-            title: 'DORA Metrics Optimized',
-            message: 'Lead Time for Changes achieved Elite pace (2.8 hours). Build success rate is passing at 98.2%.',
-            severity: 'info',
-            status: 'acknowledged',
-            created_at: new Date(Date.now() - 3600000 * 2).toISOString(),
-          },
-        ]);
+        const { notifications } = getRealNotifications();
+        setAlerts(notifications);
       });
   }, []);
 
   const handleAcknowledge = async (id: string) => {
+    markNotificationAsRead(id);
+    setAlerts((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, status: 'acknowledged' } : a))
+    );
     try {
       await fetchApi(`/alerts/acknowledge/${id}`, { method: 'POST' });
-      setAlerts((prev) =>
-        prev.map((a) => (a.id === id ? { ...a, status: 'acknowledged' } : a))
-      );
     } catch {
-      setAlerts((prev) =>
-        prev.map((a) => (a.id === id ? { ...a, status: 'acknowledged' } : a))
-      );
+      // Ignored for static client
     }
   };
 
