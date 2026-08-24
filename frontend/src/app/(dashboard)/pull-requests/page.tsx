@@ -25,21 +25,18 @@ export default function PullRequestsPage() {
               repository_name: cachedLive.repo?.name || 'Engineering-Intelligence-Platform',
               author_username: p.author_username || 'abhishekcodee',
               status: p.status,
-              review_time_hours: 3.5,
-              cycle_time_hours: 14.2,
-              additions: 145,
-              deletions: 32,
+              review_time_hours: 1.8,
+              cycle_time_hours: 11.4,
+              additions: 185,
+              deletions: 42,
               files_changed: 4,
               risk_level: p.number % 3 === 0 ? 'High' : p.number % 2 === 0 ? 'Medium' : 'Low',
-              reviewer_username: 'sarahchen',
+              reviewer_username: 'abhishekcodee',
             }))
           );
         } else {
           setPrs([
-            { id: 'pr-1', number: 105, title: 'feat(auth): implement production-level database authentication', repository_name: 'Engineering-Intelligence-Platform', author_username: 'abhishekcodee', status: 'merged', review_time_hours: 4.2, cycle_time_hours: 18.5, additions: 306, deletions: 142, files_changed: 4, risk_level: 'Low', reviewer_username: 'sarahchen' },
-            { id: 'pr-2', number: 102, title: 'fix(mobile): render mobile navigation drawer at document body level', repository_name: 'Engineering-Intelligence-Platform', author_username: 'abhishekcodee', status: 'merged', review_time_hours: 2.0, cycle_time_hours: 4.0, additions: 32, deletions: 24, files_changed: 1, risk_level: 'Low', reviewer_username: 'sarahchen' },
-            { id: 'pr-3', number: 101, title: 'feat(ui): make DevPulse frontend fully mobile-friendly', repository_name: 'Engineering-Intelligence-Platform', author_username: 'abhishekcodee', status: 'merged', review_time_hours: 6.4, cycle_time_hours: 12.4, additions: 132, deletions: 60, files_changed: 3, risk_level: 'Medium', reviewer_username: 'alexmercer' },
-            { id: 'pr-4', number: 100, title: 'ci: enable automatic GitHub Pages deployment workflow', repository_name: 'Engineering-Intelligence-Platform', author_username: 'abhishekcodee', status: 'merged', review_time_hours: 1.2, cycle_time_hours: 2.5, additions: 65, deletions: 10, files_changed: 1, risk_level: 'Low', reviewer_username: 'sarahchen' },
+            { id: 'pr-1', number: 1, title: 'feat(analytics): connect real live GitHub repository data across all dashboard pages', repository_name: 'Engineering-Intelligence-Platform', author_username: 'abhishekcodee', status: 'merged', review_time_hours: 1.8, cycle_time_hours: 11.4, additions: 185, deletions: 42, files_changed: 4, risk_level: 'Low', reviewer_username: 'abhishekcodee' },
           ]);
         }
       });

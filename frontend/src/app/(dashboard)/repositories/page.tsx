@@ -15,26 +15,26 @@ export default function RepositoriesPage() {
       .then((data) => setRepos(data))
       .catch(() => {
         const cachedLive = getCachedGithubData();
-        const liveRepo = cachedLive?.repo;
-
-        const defaultRepos = [
-          {
-            id: 'repo-live-1',
-            name: liveRepo?.name || 'Engineering-Intelligence-Platform',
-            full_name: liveRepo?.full_name || 'abhishekcodee/Engineering-Intelligence-Platform',
-            primary_language: liveRepo?.language || 'TypeScript',
-            stars_count: liveRepo?.stargazers_count ?? 1,
-            open_issues_count: liveRepo?.open_issues_count ?? 0,
-            open_prs_count: cachedLive?.prs?.length || 4,
-            build_health: 'passing',
-            engineering_health_score: 95.0,
-            description: liveRepo?.description || 'DevPulse Engineering Intelligence Platform',
-            url: liveRepo?.html_url || 'https://github.com/abhishekcodee/Engineering-Intelligence-Platform',
-          },
-          { id: 'repo-2', name: 'web-platform', full_name: 'abhishekcodee/web-platform', primary_language: 'TypeScript', stars_count: 42, open_issues_count: 1, open_prs_count: 3, build_health: 'passing', engineering_health_score: 91.0, description: 'Next.js Customer Analytics & Web Application' },
-          { id: 'repo-3', name: 'auth-service', full_name: 'abhishekcodee/auth-service', primary_language: 'Python', stars_count: 28, open_issues_count: 0, open_prs_count: 1, build_health: 'passing', engineering_health_score: 94.0, description: 'FastAPI Microservice & OAuth Authentication' },
-        ];
-        setRepos(defaultRepos);
+        if (cachedLive && cachedLive.userRepos && cachedLive.userRepos.length > 0) {
+          setRepos(cachedLive.userRepos);
+        } else {
+          const liveRepo = cachedLive?.repo;
+          setRepos([
+            {
+              id: 'repo-live-1',
+              name: liveRepo?.name || 'Engineering-Intelligence-Platform',
+              full_name: liveRepo?.full_name || 'abhishekcodee/Engineering-Intelligence-Platform',
+              primary_language: liveRepo?.language || 'TypeScript',
+              stars_count: liveRepo?.stargazers_count ?? 1,
+              open_issues_count: liveRepo?.open_issues_count ?? 0,
+              open_prs_count: cachedLive?.prs?.length || 4,
+              build_health: 'passing',
+              engineering_health_score: 95.0,
+              description: liveRepo?.description || 'DevPulse Engineering Intelligence Platform',
+              url: liveRepo?.html_url || 'https://github.com/abhishekcodee/Engineering-Intelligence-Platform',
+            },
+          ]);
+        }
       });
   }, []);
 

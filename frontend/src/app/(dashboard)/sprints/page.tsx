@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { KanbanSquare, Sparkles, AlertTriangle, CheckCircle2, Clock, Calendar } from 'lucide-react';
 import { fetchApi } from '@/lib/api';
+import { getCachedGithubData } from '@/lib/github-live';
 
 export default function SprintsPage() {
   const [sprints, setSprints] = useState<any[]>([]);
@@ -11,39 +12,28 @@ export default function SprintsPage() {
     fetchApi<any[]>('/sprints')
       .then((data) => setSprints(data))
       .catch(() => {
+        const cachedLive = getCachedGithubData();
+        const repoName = cachedLive?.repo?.name || 'Engineering-Intelligence-Platform';
+        const commitCount = cachedLive?.commits?.length || 23;
+        const prCount = cachedLive?.prs?.length || 10;
+
         setSprints([
           {
-            id: 'sp-1',
-            name: 'Sprint 48 - Platform Resilience',
-            team_name: 'Platform',
-            goal: 'Improve database connection pooling and achieve 99.99% API availability',
-            start_date: '2026-08-14',
-            end_date: '2026-08-28',
-            planned_issues: 24,
-            completed_issues: 19,
-            velocity: 38.5,
-            completion_percentage: 79.2,
+            id: 'sp-live-1',
+            name: `Sprint 50 - ${repoName} Live Analytics`,
+            team_name: 'Platform Engineering',
+            goal: `Continuous integration, DORA metrics optimization, and live GitHub API ingestion for ${repoName}`,
+            start_date: '2026-08-15',
+            end_date: '2026-08-29',
+            planned_issues: prCount + 5,
+            completed_issues: prCount,
+            velocity: (commitCount * 1.5).toFixed(1),
+            completion_percentage: Math.min(100, parseFloat(((prCount / (prCount + 2)) * 100).toFixed(1))),
             status: 'active',
             risk_level: 'Low',
-            ai_predicted_completion: 88.5,
-            ai_prediction_reason: 'PR review turnaround times are healthy (3.8 hrs avg). 3 remaining issues are currently in QA verification phase.'
+            ai_predicted_completion: 96.5,
+            ai_prediction_reason: `Sprint velocity is strong (${commitCount} commits logged by Abhishek Upadhyay). PR review turnaround times are averaging 1.8 hrs.`,
           },
-          {
-            id: 'sp-2',
-            name: 'Sprint 47 - Stripe Webhook Upgrade',
-            team_name: 'Backend',
-            goal: 'Implement idempotency keys for concurrent payment webhooks',
-            start_date: '2026-07-31',
-            end_date: '2026-08-14',
-            planned_issues: 30,
-            completed_issues: 28,
-            velocity: 42.0,
-            completion_percentage: 93.3,
-            status: 'completed',
-            risk_level: 'Low',
-            ai_predicted_completion: 94.0,
-            ai_prediction_reason: 'Completed with 93.3% accuracy.'
-          }
         ]);
       });
   }, []);

@@ -14,28 +14,34 @@ export default function DevelopersPage() {
       .then((data) => setDevelopers(data))
       .catch(() => {
         const cachedLive = getCachedGithubData();
-        const commitsCount = cachedLive?.commits?.length || 18;
-        const prsCount = cachedLive?.prs?.length || 6;
+        if (cachedLive && cachedLive.contributors && cachedLive.contributors.length > 0) {
+          setDevelopers(cachedLive.contributors);
+        } else {
+          const commitsCount = cachedLive?.commits?.length || 23;
+          const prsCount = cachedLive?.prs?.length || 10;
 
-        setDevelopers([
-          {
-            user_id: 'u-live-1',
-            full_name: 'Abhishek Upadhyay',
-            role: 'OWNER',
-            github_username: 'abhishekcodee',
-            team_name: 'Platform Engineering',
-            commits_count: commitsCount,
-            prs_created_count: prsCount,
-            prs_reviewed_count: 12,
-            avg_pr_cycle_time_hours: 11.4,
-            avg_review_time_hours: 1.8,
-            lines_added: 4210,
-            lines_deleted: 940,
-            insights: ['Primary repository maintainer for Engineering-Intelligence-Platform', 'Active continuous integration author'],
-          },
-          { user_id: 'u2', full_name: 'Sarah Chen', role: 'ENGINEERING_MANAGER', github_username: 'sarahchen', team_name: 'Backend', commits_count: 28, prs_created_count: 8, prs_reviewed_count: 36, avg_pr_cycle_time_hours: 16.5, avg_review_time_hours: 3.2, lines_added: 3410, lines_deleted: 980, insights: ['High code review participation', 'Strong domain expertise'] },
-          { user_id: 'u3', full_name: 'David Kim', role: 'DEVELOPER', github_username: 'davidkim', team_name: 'Backend', commits_count: 32, prs_created_count: 11, prs_reviewed_count: 15, avg_pr_cycle_time_hours: 18.5, avg_review_time_hours: 4.1, lines_added: 5940, lines_deleted: 1450, insights: ['Focus on integration test coverage'] },
-        ]);
+          setDevelopers([
+            {
+              user_id: 'u-live-1',
+              full_name: 'Abhishek Upadhyay',
+              role: 'OWNER / MAINTAINER',
+              github_username: 'abhishekcodee',
+              team_name: 'Platform Engineering',
+              avatar_url: cachedLive?.repo?.owner?.avatar_url || 'https://avatars.githubusercontent.com/u/234408891?v=4',
+              commits_count: commitsCount,
+              prs_created_count: prsCount,
+              prs_reviewed_count: 12,
+              avg_pr_cycle_time_hours: 11.4,
+              avg_review_time_hours: 1.8,
+              lines_added: commitsCount * 185,
+              lines_deleted: commitsCount * 42,
+              insights: [
+                'Primary repository maintainer for Engineering-Intelligence-Platform',
+                'Active continuous integration author',
+              ],
+            },
+          ]);
+        }
       });
   }, []);
 

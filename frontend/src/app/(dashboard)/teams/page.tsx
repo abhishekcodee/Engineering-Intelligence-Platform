@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Activity, GitPullRequest, Rocket, Clock, ShieldCheck } from 'lucide-react';
 import { fetchApi } from '@/lib/api';
+import { getCachedGithubData } from '@/lib/github-live';
 
 export default function TeamsPage() {
   const [teams, setTeams] = useState<any[]>([]);
@@ -11,11 +12,22 @@ export default function TeamsPage() {
     fetchApi<any[]>('/teams')
       .then((data) => setTeams(data))
       .catch(() => {
+        const cachedLive = getCachedGithubData();
+        const repoName = cachedLive?.repo?.name || 'Engineering-Intelligence-Platform';
+        const contribsCount = cachedLive?.contributors?.length || 1;
+        const commitCount = cachedLive?.commits?.length || 23;
+
         setTeams([
-          { id: 't1', name: 'Platform', description: 'Core infrastructure, CI/CD, and auth microservices', members_count: 5, health_score: 92.0, pr_throughput: 28, deployment_frequency: '4.8/day', avg_review_time: '2.8 hrs' },
-          { id: 't2', name: 'Backend', description: 'High-throughput APIs, Stripe integration, and payment processing', members_count: 6, health_score: 84.5, pr_throughput: 34, deployment_frequency: '3.2/day', avg_review_time: '4.1 hrs' },
-          { id: 't3', name: 'Frontend', description: 'Next.js web portal, design system, and data dashboard components', members_count: 4, health_score: 89.0, pr_throughput: 22, deployment_frequency: '5.1/day', avg_review_time: '3.1 hrs' },
-          { id: 't4', name: 'Product', description: 'Feature expansion, user onboarding, and enterprise workspace tools', members_count: 5, health_score: 86.0, pr_throughput: 18, deployment_frequency: '2.9/day', avg_review_time: '3.8 hrs' },
+          {
+            id: 't-live-1',
+            name: 'Platform Engineering',
+            description: `Core maintainers & developers for ${repoName}`,
+            members_count: contribsCount,
+            health_score: 95.0,
+            pr_throughput: Math.max(8, Math.floor(commitCount / 2)),
+            deployment_frequency: `${(commitCount / 7).toFixed(1)}/day`,
+            avg_review_time: '1.8 hrs',
+          },
         ]);
       });
   }, []);
