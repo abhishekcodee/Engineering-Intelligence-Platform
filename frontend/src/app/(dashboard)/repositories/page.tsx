@@ -91,10 +91,10 @@ export default function RepositoriesPage() {
                 </div>
                 <div className="flex flex-col items-end gap-1">
                   <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-                    {repo.engineering_health_score}% Health (-5% loss)
+                    {repo.engineering_health_score}% Health (-{repo.loss_percentage || (100 - repo.engineering_health_score).toFixed(1)}% loss)
                   </span>
                   <span className="text-[9px] font-medium text-amber-500/90 bg-amber-500/5 px-2 py-0.5 rounded border border-amber-500/10">
-                    -3% PR Review Latency | -2% Coverage Gap
+                    {repo.loss_summary || '-3% PR Review Latency | -2% Coverage Gap'}
                   </span>
                 </div>
               </div>

@@ -19,6 +19,11 @@ export default function RepositoryDetailClient({ id }: { id: string }) {
           const commits = cachedLive?.commits || [];
           const prs = cachedLive?.prs || [];
 
+          const deductions = parsed.deductions || [
+            { percentage: '-3.0%', title: 'PR Review Turnaround Latency', detail: '2 active pull requests pending peer review > 12 hours.' },
+            { percentage: '-2.0%', title: 'Test Coverage Target Gap', detail: 'Unit test coverage reached 93.5% vs required 95.0% target.' }
+          ];
+
           setRepo({
             id: parsed.id || id,
             name: parsed.name || 'Engineering-Intelligence-Platform',
@@ -26,6 +31,10 @@ export default function RepositoryDetailClient({ id }: { id: string }) {
             primary_language: parsed.primary_language || 'TypeScript',
             description: parsed.description || `${parsed.name} GitHub Repository`,
             engineering_health_score: parsed.engineering_health_score || 95.0,
+            loss_percentage: parsed.loss_percentage || 5.0,
+            deductions: deductions,
+            lead_time: parsed.lead_time || '2.8 hours',
+            deployment_frequency: parsed.deployment_frequency || '4.3/day',
             total_commits: commits.length || 23,
             total_deployments: Math.max(5, Math.floor(commits.length / 2)),
             recent_prs: prs.slice(0, 3).map((p: any) => ({
@@ -66,6 +75,11 @@ export default function RepositoryDetailClient({ id }: { id: string }) {
           primary_language: liveRepo?.language || 'TypeScript',
           description: liveRepo?.description || 'DevPulse Engineering Intelligence Platform',
           engineering_health_score: 95.0,
+          loss_percentage: 5.0,
+          deductions: [
+            { percentage: '-3.0%', title: 'PR Review Turnaround Latency', detail: '2 active pull requests pending peer review > 12 hours.' },
+            { percentage: '-2.0%', title: 'Test Coverage Target Gap', detail: 'Unit test coverage reached 93.5% vs required 95.0% target.' }
+          ],
           total_commits: commits.length || 23,
           total_deployments: Math.max(5, Math.floor(commits.length / 2)),
           recent_prs: prs.slice(0, 3).map((p: any) => ({
@@ -87,62 +101,72 @@ export default function RepositoryDetailClient({ id }: { id: string }) {
       });
   }, [id]);
 
-  if (!repo) return null;
+  if (!repo) {
+    return (
+      <div className="p-8 text-center text-xs text-zinc-500 animate-pulse">
+        Loading repository parameters and live metrics...
+      </div>
+    );
+  }
+
+  const lossPct = (repo.loss_percentage || (100 - repo.engineering_health_score)).toFixed(1);
+  const healthScore = (repo.engineering_health_score || 95.0).toFixed(1);
 
   return (
     <div className="space-y-6">
       <Link href="/repositories" className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">
-        <ArrowLeft className="h-3.5 w-3.5" /> Back to Repositories
+        <ArrowLeft className="h-3.5 w-3.5" />
+        Back to Repositories
       </Link>
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 shadow-sm">
-        <div>
-          <div className="flex items-center gap-2">
-            <FolderGit2 className="h-5 w-5 text-indigo-500" />
-            <h1 className="text-xl font-bold text-zinc-900 dark:text-white">{repo.full_name}</h1>
-          </div>
-          <p className="text-xs text-zinc-500 mt-1">{repo.description}</p>
-        </div>
-
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900/60 shadow-sm">
         <div className="flex items-center gap-3">
+          <div className="p-3 rounded-xl bg-indigo-500/10 text-indigo-500">
+            <FolderGit2 className="h-6 w-6" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-zinc-900 dark:text-white">{repo.name}</h1>
+            <p className="text-xs text-zinc-500">{repo.full_name}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
           <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-            {repo.engineering_health_score}% Engineering Health (-5.0% Loss)
+            {healthScore}% Health (-{lossPct}% loss)
+          </span>
+          <span className="px-3 py-1 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
+            {repo.primary_language}
           </span>
         </div>
       </div>
 
-      {/* Health Loss Score Breakdown Card */}
-      <div className="p-6 rounded-2xl border border-amber-500/20 bg-amber-500/5 dark:bg-amber-500/5 shadow-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
+      {/* Health Audit Deduction Breakdown Card */}
+      <div className="p-5 rounded-2xl border border-amber-500/30 bg-amber-500/5 dark:bg-amber-500/10 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-500/20 pb-3">
           <div className="flex items-center gap-2">
             <TrendingDown className="h-5 w-5 text-amber-500" />
             <h2 className="text-sm font-bold text-zinc-900 dark:text-white">
-              Engineering Health Audit (-5.0% Score Deduction Breakdown)
+              Engineering Health Audit (-{lossPct}% Score Deduction Breakdown)
             </h2>
           </div>
-          <span className="text-xs font-semibold text-zinc-500">Target Score: 100.0% → Current: 95.0%</span>
+          <span className="text-xs font-semibold text-zinc-500">Target Score: 100.0% → Current: {healthScore}%</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-          <div className="p-3.5 rounded-xl bg-white/80 dark:bg-zinc-900/80 border border-zinc-200/60 dark:border-zinc-800/60 flex items-start gap-3">
-            <div className="h-8 w-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0 font-bold">
-              -3.0%
+          {(repo.deductions || [
+            { percentage: '-3.0%', title: 'PR Review Turnaround Latency', detail: '2 active pull requests pending peer review > 12 hours.' },
+            { percentage: '-2.0%', title: 'Test Coverage Target Gap', detail: 'Unit test coverage reached 93.5% vs required 95.0% target.' }
+          ]).map((d: any, idx: number) => (
+            <div key={idx} className="p-3.5 rounded-xl bg-white/80 dark:bg-zinc-900/80 border border-zinc-200/60 dark:border-zinc-800/60 flex items-start gap-3">
+              <div className="h-8 w-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0 font-bold">
+                {d.percentage}
+              </div>
+              <div>
+                <span className="font-semibold text-zinc-900 dark:text-zinc-100 block">{d.title}</span>
+                <span className="text-[11px] text-zinc-500">{d.detail}</span>
+              </div>
             </div>
-            <div>
-              <span className="font-semibold text-zinc-900 dark:text-zinc-100 block">PR Review Turnaround Latency</span>
-              <span className="text-[11px] text-zinc-500">2 active pull requests pending peer review &gt; 12 hours.</span>
-            </div>
-          </div>
-
-          <div className="p-3.5 rounded-xl bg-white/80 dark:bg-zinc-900/80 border border-zinc-200/60 dark:border-zinc-800/60 flex items-start gap-3">
-            <div className="h-8 w-8 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center shrink-0 font-bold">
-              -2.0%
-            </div>
-            <div>
-              <span className="font-semibold text-zinc-900 dark:text-zinc-100 block">Test Coverage Target Gap</span>
-              <span className="text-[11px] text-zinc-500">Unit test coverage reached 93.5% vs required 95.0% target.</span>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
