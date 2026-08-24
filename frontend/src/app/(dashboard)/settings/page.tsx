@@ -13,7 +13,12 @@ export default function SettingsPage() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('devpulse_timezone');
-      if (stored) setTimezone(stored);
+      if (stored && (stored.includes('Kolkata') || stored.includes('IST'))) {
+        setTimezone(stored);
+      } else {
+        setTimezone('Asia/Kolkata (IST - UTC+05:30)');
+        localStorage.setItem('devpulse_timezone', 'Asia/Kolkata (IST - UTC+05:30)');
+      }
     }
   }, []);
 
