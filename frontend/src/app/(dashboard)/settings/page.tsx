@@ -1,17 +1,34 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Settings, Shield, Users, Bell, Building2, Lock, History } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 
 export default function SettingsPage() {
   const { user, org } = useAuth();
   const [activeTab, setActiveTab] = useState<'organization' | 'team' | 'security' | 'audit' | 'plan'>('organization');
+  const [timezone, setTimezone] = useState('Asia/Kolkata (IST - UTC+05:30)');
+  const [savedSuccess, setSavedSuccess] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('devpulse_timezone');
+      if (stored) setTimezone(stored);
+    }
+  }, []);
+
+  const handleSaveTimezone = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('devpulse_timezone', timezone);
+    }
+    setSavedSuccess(true);
+    setTimeout(() => setSavedSuccess(false), 3000);
+  };
 
   const auditLogs = [
-    { id: '1', action: 'USER_LOGIN', user: 'Alex Mercer', ip: '192.168.1.1', timestamp: new Date().toLocaleString() },
-    { id: '2', action: 'GITHUB_SYNC_TRIGGERED', user: 'Sarah Chen', ip: '192.168.1.4', timestamp: new Date(Date.now() - 3600000).toLocaleString() },
-    { id: '3', action: 'ALERT_ACKNOWLEDGED', user: 'Alex Mercer', ip: '192.168.1.1', timestamp: new Date(Date.now() - 7200000).toLocaleString() },
+    { id: '1', action: 'USER_LOGIN', user: 'Abhishek Upadhyay', ip: '192.168.1.1', timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) },
+    { id: '2', action: 'GITHUB_SYNC_TRIGGERED', user: 'Abhishek Upadhyay', ip: '192.168.1.4', timestamp: new Date(Date.now() - 3600000).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) },
+    { id: '3', action: 'TIMEZONE_UPDATED', user: 'Abhishek Upadhyay', ip: '192.168.1.1', timestamp: new Date(Date.now() - 7200000).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) },
   ];
 
   return (
@@ -75,15 +92,31 @@ export default function SettingsPage() {
             </div>
             <div>
               <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Timezone</label>
-              <select className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 px-3 py-2 text-zinc-900 dark:text-white focus:outline-none">
-                <option>America/New_York (UTC-5)</option>
-                <option>UTC (Coordinated Universal Time)</option>
-                <option>Europe/London (UTC+0)</option>
+              <select
+                value={timezone}
+                onChange={(e) => setTimezone(e.target.value)}
+                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 px-3 py-2 text-zinc-900 dark:text-white focus:outline-none cursor-pointer"
+              >
+                <option value="Asia/Kolkata (IST - UTC+05:30)">Asia/Kolkata (IST - UTC+05:30) 🇮🇳</option>
+                <option value="America/New_York (UTC-5)">America/New_York (UTC-5)</option>
+                <option value="UTC (Coordinated Universal Time)">UTC (Coordinated Universal Time)</option>
+                <option value="Europe/London (UTC+0)">Europe/London (UTC+0)</option>
+                <option value="Asia/Tokyo (JST - UTC+9)">Asia/Tokyo (JST - UTC+9)</option>
               </select>
             </div>
-            <button className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-500 transition-all">
-              Save Changes
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleSaveTimezone}
+                className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-500 transition-all"
+              >
+                Save Changes
+              </button>
+              {savedSuccess && (
+                <span className="text-xs font-semibold text-emerald-500 animate-pulse">
+                  Timezone saved to Indian Standard Time (IST)!
+                </span>
+              )}
+            </div>
           </div>
         )}
 
