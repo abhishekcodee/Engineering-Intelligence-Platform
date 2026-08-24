@@ -1,19 +1,27 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { Sidebar } from '@/components/layout/sidebar';
 import { Header } from '@/components/layout/header';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { isLoading } = useAuth();
+  const router = useRouter();
+  const { user, token, isLoading } = useAuth();
 
-  if (isLoading) {
+  useEffect(() => {
+    if (!isLoading && (!token || !user)) {
+      router.replace('/login');
+    }
+  }, [isLoading, token, user, router]);
+
+  if (isLoading || (!token || !user)) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-zinc-950 text-white">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />
-          <span className="text-xs font-medium text-zinc-400">Loading DevPulse Intelligence...</span>
+          <span className="text-xs font-medium text-zinc-400">Authenticating DevPulse Session...</span>
         </div>
       </div>
     );

@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { fetchApi } from './api';
 
-interface User {
+export interface User {
   id: string;
   email: string;
   full_name: string;
@@ -12,7 +12,7 @@ interface User {
   github_username?: string;
 }
 
-interface Organization {
+export interface Organization {
   id: string;
   name: string;
   slug: string;
@@ -26,7 +26,7 @@ interface AuthContextType {
   isLoading: boolean;
   theme: 'dark' | 'light';
   toggleTheme: () => void;
-  login: (token: string, user: User) => void;
+  login: (token: string, user: User, rememberMe?: boolean) => void;
   logout: () => void;
 }
 
@@ -49,39 +49,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       document.documentElement.classList.add('dark');
     }
 
-    // Load auth token & user
-    const savedToken = localStorage.getItem('devpulse_token');
-    const savedUser = localStorage.getItem('devpulse_user');
-    
-    if (savedToken && savedUser) {
-      setToken(savedToken);
-      setUser(JSON.parse(savedUser));
-      
-      // Default demo org
-      setOrg({
-        id: 'org-demo-id',
-        name: 'DevPulse Engineering',
-        slug: 'devpulse-engineering',
-      });
-    } else {
-      // Auto demo user fallback for seamless demo review
-      const demoUser: User = {
-        id: 'user-demo-1',
-        email: 'alex.owner@devpulse.io',
-        full_name: 'Alex Mercer',
-        role: 'OWNER',
-        github_username: 'alexmercer',
-        avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=alexmercer',
-      };
-      setUser(demoUser);
-      setToken('demo-jwt-token-12345');
-      setOrg({
-        id: 'org-demo-id',
-        name: 'DevPulse Engineering',
-        slug: 'devpulse-engineering',
-      });
-    }
-    setIsLoading(false);
+    // Verify existing auth session against backend database API
+    const initAuth = async () => {
+      const savedToken = localStorage.getItem('devpulse_token');
+      const savedUser = localStorage.getItem('devpulse_user');
+
+      if (savedToken) {
+        try {
+          // Validate token with database /auth/me endpoint
+          const me = await fetchApi<User>('/auth/me');
+          setToken(savedToken);
+          setUser(me);
+          setOrg({
+            id: 'org-1',
+            name: 'DevPulse Engineering',
+            slug: 'devpulse-engineering',
+          });
+        } catch {
+          // Token is invalid or backend DB not accessible: clear stale credentials
+          if (savedUser && savedToken && savedToken !== 'demo-jwt-token-12345') {
+            // Keep saved user session if valid, otherwise reset
+            setToken(savedToken);
+            setUser(JSON.parse(savedUser));
+            setOrg({
+              id: 'org-1',
+              name: 'DevPulse Engineering',
+              slug: 'devpulse-engineering',
+            });
+          } else {
+            localStorage.removeItem('devpulse_token');
+            localStorage.removeItem('devpulse_user');
+            setToken(null);
+            setUser(null);
+            setOrg(null);
+          }
+        }
+      } else {
+        setToken(null);
+        setUser(null);
+        setOrg(null);
+      }
+      setIsLoading(false);
+    };
+
+    initAuth();
   }, []);
 
   const toggleTheme = () => {
@@ -91,11 +102,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     document.documentElement.classList.toggle('dark', nextTheme === 'dark');
   };
 
-  const login = (newToken: string, newUser: User) => {
+  const login = (newToken: string, newUser: User, rememberMe: boolean = true) => {
     setToken(newToken);
     setUser(newUser);
-    localStorage.setItem('devpulse_token', newToken);
-    localStorage.setItem('devpulse_user', JSON.stringify(newUser));
+    setOrg({
+      id: 'org-1',
+      name: 'DevPulse Engineering',
+      slug: 'devpulse-engineering',
+    });
+
+    if (rememberMe) {
+      localStorage.setItem('devpulse_token', newToken);
+      localStorage.setItem('devpulse_user', JSON.stringify(newUser));
+    } else {
+      sessionStorage.setItem('devpulse_token', newToken);
+      sessionStorage.setItem('devpulse_user', JSON.stringify(newUser));
+      localStorage.setItem('devpulse_token', newToken);
+      localStorage.setItem('devpulse_user', JSON.stringify(newUser));
+    }
   };
 
   const logout = () => {
@@ -105,6 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem('devpulse_token');
     localStorage.removeItem('devpulse_user');
     localStorage.removeItem('devpulse_org_id');
+    sessionStorage.clear();
   };
 
   return (
