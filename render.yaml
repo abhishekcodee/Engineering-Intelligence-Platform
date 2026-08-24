@@ -1,20 +1,34 @@
 services:
   - type: web
     name: devpulse-api
-    env: python
+    runtime: python
     region: oregon
     plan: free
+
     buildCommand: pip install -r backend/requirements.txt
     startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+
     healthCheckPath: /health
+
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.8
+
       - key: ENVIRONMENT
         value: production
+
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: devpulse-db
+          property: connectionString
+
       - key: SECRET_KEY
         generateValue: true
+
       - key: CORS_ORIGINS
-        value: https://abhishekcodee.github.io,https://abhishecodee.github.io
+        value: https://abhishekcodee.github.io
+
+databases:
+  - name: devpulse-db
+    plan: free
+    region: oregon
