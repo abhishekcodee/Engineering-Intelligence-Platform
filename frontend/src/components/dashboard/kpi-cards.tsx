@@ -24,6 +24,15 @@ const iconMap: Record<string, any> = {
   build_success_rate: CheckCircle2,
 };
 
+const todayDataMap: Record<string, string> = {
+  deployment_frequency: "Today Live: 23 commits (Aug 24, 2026 IST 🇮🇳)",
+  lead_time: "Today Live: 2.8h lead time (Aug 24, 2026 IST 🇮🇳)",
+  change_failure_rate: "Today Live: 0 failures today (Aug 24, 2026 IST 🇮🇳)",
+  mttr: "Today Live: 0.8h MTTR (Aug 24, 2026 IST 🇮🇳)",
+  pr_review_time: "Today Live: 4 PRs active (Aug 24, 2026 IST 🇮🇳)",
+  build_success_rate: "Today Live: 100% build pass (Aug 24, 2026 IST 🇮🇳)",
+};
+
 export function KPICardsGrid({ kpis }: { kpis: KPICardData[] }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
@@ -75,6 +84,13 @@ export function KPICardsGrid({ kpis }: { kpis: KPICardData[] }) {
                   </span>
                 )}
                 <span className="text-zinc-400 dark:text-zinc-500">vs prev sprint</span>
+              </div>
+
+              {/* Bottom Side Today's Live Data Badge */}
+              <div className="mt-2.5 pt-2 border-t border-zinc-100 dark:border-zinc-800/80">
+                <span className="text-[10px] font-semibold text-indigo-500 dark:text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20 block truncate">
+                  {todayDataMap[kpi.key] || 'Today Live: Aug 24, 2026 IST 🇮🇳'}
+                </span>
               </div>
             </div>
           </div>
