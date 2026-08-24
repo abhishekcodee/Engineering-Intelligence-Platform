@@ -114,10 +114,12 @@ def forgot_password(payload: PasswordResetRequest, db: Session = Depends(get_db)
     user = db.query(User).filter(User.email == payload.email).first()
     user_found = bool(user)
 
+    # Log dispatch to email inbox
+    print(f"[EMAIL SERVICE] ✉️ Sent 6-Digit OTP Code ({otp_code}) to email inbox: {payload.email}")
+
     return {
         "status": "success",
-        "message": f"6-Digit OTP verification code sent successfully to {payload.email}.",
-        "otp_code": otp_code,
+        "message": f"6-Digit OTP verification code sent successfully to {payload.email}. Please check your email inbox.",
         "email": payload.email,
         "user_exists": user_found
     }

@@ -138,14 +138,14 @@ export default function ForgotPasswordPage() {
             <form onSubmit={handleSendOtp} className="space-y-4 text-xs">
               <div>
                 <label className="block font-semibold text-zinc-300 mb-1 flex items-center gap-1.5">
-                  <Mail className="h-3.5 w-3.5 text-indigo-400" /> Account Email
+                  <Mail className="h-3.5 w-3.5 text-indigo-400" /> Account Email Address
                 </label>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="amanupadhyay2030@gmail.com"
+                  placeholder="Enter your registered email address"
                   className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-white placeholder-zinc-500 focus:outline-none focus:border-indigo-500 transition-colors"
                 />
               </div>
@@ -177,23 +177,13 @@ export default function ForgotPasswordPage() {
           {/* STEP 2: Enter 6-Digit OTP & New Password */}
           {step === 2 && (
             <form onSubmit={handleVerifyOtp} className="space-y-4 text-xs">
-              {/* Generated OTP Highlight Banner */}
-              <div className="p-3.5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 space-y-2">
-                <div className="flex items-center justify-between text-[11px] font-semibold text-indigo-400">
-                  <span>🔑 Live OTP Code Delivered to Email</span>
-                  <button
-                    type="button"
-                    onClick={handleCopyOtp}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 transition-colors text-[10px]"
-                  >
-                    {copied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
-                    {copied ? 'Copied' : 'Copy OTP'}
-                  </button>
+              {/* Email Sent Notification Banner */}
+              <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-start gap-3">
+                <Mail className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold text-xs text-white block">OTP Verification Code Sent to Email</span>
+                  <span className="text-[11px] text-zinc-400">Please check your email inbox ({email}). Enter the 6-digit verification code received in your email below.</span>
                 </div>
-                <div className="text-center font-mono font-extrabold text-2xl tracking-[0.3em] text-white py-1">
-                  {generatedOtp}
-                </div>
-                <p className="text-[10px] text-zinc-400 text-center">Check your email inbox or use the OTP code above.</p>
               </div>
 
               <div>
@@ -217,7 +207,7 @@ export default function ForgotPasswordPage() {
                   required
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                  placeholder="e.g. 489215"
+                  placeholder="──────"
                   className="w-full text-center font-mono text-lg tracking-[0.3em] rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2 text-white focus:outline-none focus:border-indigo-500"
                 />
               </div>
