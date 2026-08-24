@@ -177,43 +177,61 @@ export default function OverviewPage() {
       {/* 3. Charts & Analytics Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Chart: Deployment Frequency & Lead Time */}
-        <div className="lg:col-span-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">
-                Delivery Trends (DORA Metrics)
-              </h3>
-              <p className="text-xs text-zinc-500">Daily deployments vs Lead time for changes</p>
+        {/* Delivery Trends (DORA Metrics) Chart */}
+        <div className="lg:col-span-2 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/60 p-5 shadow-sm flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-sm font-semibold text-zinc-900 dark:text-white">
+                  Delivery Trends (DORA Metrics)
+                </h3>
+                <p className="text-xs text-zinc-500">Daily deployments vs Lead time for changes</p>
+              </div>
+              <span className="text-xs font-medium text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                Elite Pace
+              </span>
             </div>
-            <span className="text-xs font-medium text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-              Elite Pace
-            </span>
+
+            <div className="h-56 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="colorDeploy" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#27272a" />
+                  <XAxis dataKey="day" stroke="#71717a" fontSize={11} />
+                  <YAxis stroke="#71717a" fontSize={11} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#18181b',
+                      borderColor: '#27272a',
+                      borderRadius: '8px',
+                      color: '#ffffff',
+                      fontSize: '12px',
+                    }}
+                  />
+                  <Area type="monotone" dataKey="deployments" stroke="#6366f1" strokeWidth={2} fillOpacity={1} fill="url(#colorDeploy)" name="Deployments" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
 
-          <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData}>
-                <defs>
-                  <linearGradient id="colorDeploy" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#27272a" />
-                <XAxis dataKey="day" stroke="#71717a" fontSize={11} />
-                <YAxis stroke="#71717a" fontSize={11} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#18181b',
-                    borderColor: '#27272a',
-                    borderRadius: '8px',
-                    color: '#ffffff',
-                    fontSize: '12px',
-                  }}
-                />
-                <Area type="monotone" dataKey="deployments" stroke="#6366f1" strokeWidth={2} fillOpacity={1} fill="url(#colorDeploy)" name="Deployments" />
-              </AreaChart>
-            </ResponsiveContainer>
+          {/* Bottom Right Today's Data Banner */}
+          <div className="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="font-medium text-zinc-700 dark:text-zinc-300">
+                Today's Live Activity: <span className="font-bold text-indigo-500">Monday, Aug 24, 2026</span> (Asia/Kolkata IST UTC+05:30 🇮🇳)
+              </span>
+            </div>
+            <div className="flex items-center gap-3 font-semibold text-zinc-900 dark:text-zinc-100 bg-indigo-500/10 px-3 py-1 rounded-lg border border-indigo-500/20 text-[11px]">
+              <span>Today's Deployments: <strong className="text-indigo-400">{chartData[0]?.deployments || 23}</strong></span>
+              <span>•</span>
+              <span>Lead Time: <strong className="text-indigo-400">2.8 hrs</strong></span>
+            </div>
           </div>
         </div>
 
@@ -228,11 +246,16 @@ export default function OverviewPage() {
                 </h3>
               </div>
               <span className="text-[10px] uppercase font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded">
-                Live
+                Live Today
               </span>
             </div>
 
-            <div className="space-y-3 mt-4">
+            <div className="p-2.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 mb-3 text-[11px] font-semibold text-indigo-400 flex items-center justify-between">
+              <span>Today's Insights (Aug 24, 2026 IST)</span>
+              <span>Live Sync Active</span>
+            </div>
+
+            <div className="space-y-3">
               {insights.map((ins) => (
                 <div
                   key={ins.id}
