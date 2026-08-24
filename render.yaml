@@ -17,4 +17,4 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: https://abhishecodee.github.io
+        value: https://abhishekcodee.github.io,https://abhishecodee.github.io

@@ -41,7 +41,8 @@ class Settings(BaseSettings):
         "http://127.0.0.1:3000",
         "http://127.0.0.1:3001",
         "http://localhost:8000",
-        "https://abhishecodee.github.io"
+        "https://abhishecodee.github.io",
+        "https://abhishekcodee.github.io"
     ]
     
     @field_validator("CORS_ORIGINS", mode="before")
