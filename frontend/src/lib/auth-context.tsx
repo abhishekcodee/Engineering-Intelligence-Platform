@@ -26,6 +26,7 @@ interface AuthContextType {
   isLoading: boolean;
   theme: 'dark' | 'light';
   toggleTheme: () => void;
+  updateOrgName: (name: string) => void;
   login: (token: string, user: User, rememberMe?: boolean) => void;
   logout: () => void;
 }
@@ -53,28 +54,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const initAuth = async () => {
       const savedToken = localStorage.getItem('devpulse_token');
       const savedUser = localStorage.getItem('devpulse_user');
+      const savedOrgName = localStorage.getItem('devpulse_org_name') || 'DevPulse Engineering';
 
       if (savedToken) {
         try {
-          // Validate token with database /auth/me endpoint
           const me = await fetchApi<User>('/auth/me');
           setToken(savedToken);
           setUser(me);
           setOrg({
             id: 'org-1',
-            name: 'DevPulse Engineering',
-            slug: 'devpulse-engineering',
+            name: savedOrgName,
+            slug: savedOrgName.toLowerCase().replace(/\s+/g, '-'),
           });
         } catch {
-          // Token is invalid or backend DB not accessible: clear stale credentials
           if (savedUser && savedToken && savedToken !== 'demo-jwt-token-12345') {
-            // Keep saved user session if valid, otherwise reset
             setToken(savedToken);
             setUser(JSON.parse(savedUser));
             setOrg({
               id: 'org-1',
-              name: 'DevPulse Engineering',
-              slug: 'devpulse-engineering',
+              name: savedOrgName,
+              slug: savedOrgName.toLowerCase().replace(/\s+/g, '-'),
             });
           } else {
             localStorage.removeItem('devpulse_token');
@@ -95,6 +94,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initAuth();
   }, []);
 
+  const updateOrgName = (name: string) => {
+    setOrg((prev) => (prev ? { ...prev, name, slug: name.toLowerCase().replace(/\s+/g, '-') } : { id: 'org-1', name, slug: name.toLowerCase().replace(/\s+/g, '-') }));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('devpulse_org_name', name);
+    }
+  };
+
   const toggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(nextTheme);
@@ -103,12 +109,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const login = (newToken: string, newUser: User, rememberMe: boolean = true) => {
+    const savedOrgName = localStorage.getItem('devpulse_org_name') || 'DevPulse Engineering';
     setToken(newToken);
     setUser(newUser);
     setOrg({
       id: 'org-1',
-      name: 'DevPulse Engineering',
-      slug: 'devpulse-engineering',
+      name: savedOrgName,
+      slug: savedOrgName.toLowerCase().replace(/\s+/g, '-'),
     });
 
     if (rememberMe) {
@@ -141,6 +148,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isLoading,
         theme,
         toggleTheme,
+        updateOrgName,
         login,
         logout,
       }}

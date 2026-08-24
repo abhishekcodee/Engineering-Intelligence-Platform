@@ -1,14 +1,22 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Settings, Shield, Users, Bell, Building2, Lock, History } from 'lucide-react';
+import { Settings, Shield, Users, Bell, Building2, Lock, History, CheckCircle2, Loader2 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 
 export default function SettingsPage() {
-  const { user, org } = useAuth();
+  const { user, org, updateOrgName } = useAuth();
   const [activeTab, setActiveTab] = useState<'organization' | 'team' | 'security' | 'audit' | 'plan'>('organization');
+  const [orgName, setOrgName] = useState(org?.name || 'DevPulse Engineering');
   const [timezone, setTimezone] = useState('Asia/Kolkata (IST - UTC+05:30)');
+  const [isSaving, setIsSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  useEffect(() => {
+    if (org?.name) {
+      setOrgName(org.name);
+    }
+  }, [org?.name]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -22,18 +30,23 @@ export default function SettingsPage() {
     }
   }, []);
 
-  const handleSaveTimezone = () => {
+  const handleSaveChanges = () => {
+    setIsSaving(true);
+    updateOrgName(orgName);
     if (typeof window !== 'undefined') {
       localStorage.setItem('devpulse_timezone', timezone);
     }
-    setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 3000);
+    setTimeout(() => {
+      setIsSaving(false);
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 4000);
+    }, 400);
   };
 
   const auditLogs = [
     { id: '1', action: 'USER_LOGIN', user: 'Abhishek Upadhyay', ip: '192.168.1.1', timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) },
     { id: '2', action: 'GITHUB_SYNC_TRIGGERED', user: 'Abhishek Upadhyay', ip: '192.168.1.4', timestamp: new Date(Date.now() - 3600000).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) },
-    { id: '3', action: 'TIMEZONE_UPDATED', user: 'Abhishek Upadhyay', ip: '192.168.1.1', timestamp: new Date(Date.now() - 7200000).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) },
+    { id: '3', action: 'SETTINGS_SAVED', user: 'Abhishek Upadhyay', ip: '192.168.1.1', timestamp: new Date(Date.now() - 7200000).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) },
   ];
 
   return (
@@ -82,8 +95,9 @@ export default function SettingsPage() {
               <label className="block font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Organization Name</label>
               <input
                 type="text"
-                defaultValue={org?.name || 'DevPulse Engineering'}
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 px-3 py-2 text-zinc-900 dark:text-white focus:outline-none"
+                value={orgName}
+                onChange={(e) => setOrgName(e.target.value)}
+                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 px-3 py-2 text-zinc-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
             <div>
@@ -91,7 +105,7 @@ export default function SettingsPage() {
               <input
                 type="text"
                 disabled
-                defaultValue={org?.slug || 'devpulse-engineering'}
+                value={orgName.toLowerCase().replace(/\s+/g, '-')}
                 className="w-full rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-900 px-3 py-2 text-zinc-500 cursor-not-allowed"
               />
             </div>
@@ -109,17 +123,27 @@ export default function SettingsPage() {
                 <option value="Asia/Tokyo (JST - UTC+9)">Asia/Tokyo (JST - UTC+9)</option>
               </select>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-2">
               <button
-                onClick={handleSaveTimezone}
-                className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-500 transition-all"
+                type="button"
+                onClick={handleSaveChanges}
+                disabled={isSaving}
+                className="px-5 py-2.5 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-500 transition-all flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
               >
-                Save Changes
+                {isSaving ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <span>Save Changes</span>
+                )}
               </button>
               {savedSuccess && (
-                <span className="text-xs font-semibold text-emerald-500 animate-pulse">
-                  Timezone saved to Indian Standard Time (IST)!
-                </span>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-semibold text-xs animate-fade-in">
+                  <CheckCircle2 className="h-4 w-4 shrink-0" />
+                  <span>Organization settings & IST timezone saved!</span>
+                </div>
               )}
             </div>
           </div>
