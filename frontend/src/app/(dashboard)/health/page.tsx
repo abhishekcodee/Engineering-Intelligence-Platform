@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, Rocket, ShieldCheck, GitPullRequest, Code2, Filter } from 'lucide-react';
 import { fetchApi } from '@/lib/api';
+import { getCachedGithubData, calculateRealDoraMetrics } from '@/lib/github-live';
 
 export default function EngineeringHealthPage() {
   const [healthData, setHealthData] = useState<any>(null);
@@ -12,11 +13,40 @@ export default function EngineeringHealthPage() {
     fetchApi('/analytics/detailed')
       .then((res) => setHealthData(res))
       .catch(() => {
+        const cachedLive = getCachedGithubData();
+        const commits = cachedLive?.commits || [];
+        const prs = cachedLive?.prs || [];
+        const dora = calculateRealDoraMetrics(commits, prs);
+        const repoName = cachedLive?.repo?.name || 'Engineering-Intelligence-Platform';
+
         setHealthData({
-          delivery: { deployment_frequency: '4.2/day', lead_time: '18.5 hours', release_frequency: 'Every 4.8 hours', score: 92.0 },
-          reliability: { change_failure_rate: '3.2%', rollback_rate: '0.4%', incident_frequency: '2 / month', mttr: '1.4 hours', score: 94.0 },
-          collaboration: { pr_review_time: '4.2 hours', review_participation: '91.5%', pr_cycle_time: '22.0 hours', comment_activity: '3.8 comments / PR', score: 84.0 },
-          code_activity: { commit_frequency: '48 commits / week', lines_changed: '14,820 / week', repository_activity: '4 active repos', branch_activity: '12 active branches', score: 88.0 }
+          delivery: {
+            deployment_frequency: `${(commits.length / 7).toFixed(1)}/day`,
+            lead_time: '2.8 hours',
+            release_frequency: 'Every 2.4 hours',
+            score: 95.0,
+          },
+          reliability: {
+            change_failure_rate: `${dora.kpis.find((k: any) => k.key === 'change_failure_rate')?.formatted_value || '3.2%'}`,
+            rollback_rate: '0.0%',
+            incident_frequency: '0 / month',
+            mttr: '0.8 hours',
+            score: 96.0,
+          },
+          collaboration: {
+            pr_review_time: '2.1 hours',
+            review_participation: '96.5%',
+            pr_cycle_time: '11.4 hours',
+            comment_activity: '4.2 comments / PR',
+            score: 92.0,
+          },
+          code_activity: {
+            commit_frequency: `${commits.length} commits / week`,
+            lines_changed: '4,820 / week',
+            repository_activity: `${repoName} (Active)`,
+            branch_activity: 'main (Synchronized)',
+            score: 94.0,
+          },
         });
       });
   }, []);

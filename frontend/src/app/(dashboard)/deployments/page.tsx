@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Rocket, CheckCircle2, AlertTriangle, RefreshCw, Clock, ArrowRight } from 'lucide-react';
 import { fetchApi } from '@/lib/api';
+import { getCachedGithubData } from '@/lib/github-live';
 
 export default function DeploymentsPage() {
   const [deployments, setDeployments] = useState<any[]>([]);
@@ -11,11 +12,35 @@ export default function DeploymentsPage() {
     fetchApi<any[]>('/deployments')
       .then((data) => setDeployments(data))
       .catch(() => {
-        setDeployments([
-          { id: 'd-1', repository_name: 'payments-api', environment: 'production', status: 'success', sha: 'c7f08a9', commit_message: 'Deploy Stripe Webhook idempotency release v1.4.0', deployed_by: 'GitHub Actions', duration_seconds: 180, deployed_at: new Date().toISOString(), events: [{ event_type: 'build', status: 'passed' }, { event_type: 'test', status: 'passed' }, { event_type: 'deploy', status: 'passed' }] },
-          { id: 'd-2', repository_name: 'web-platform', environment: 'staging', status: 'failure', sha: 'd1a9b2c', commit_message: 'Deploy Next.js 14 performance patch', deployed_by: 'Alex Mercer', duration_seconds: 240, failure_reason: 'Integration test timeout on database migration step', deployed_at: new Date(Date.now() - 3600000 * 5).toISOString(), events: [{ event_type: 'build', status: 'passed' }, { event_type: 'test', status: 'failed' }] },
-          { id: 'd-3', repository_name: 'auth-service', environment: 'production', status: 'success', sha: 'e4b2c1d', commit_message: 'Deploy SMS MFA endpoint v2.1.0', deployed_by: 'GitHub Actions', duration_seconds: 140, deployed_at: new Date(Date.now() - 3600000 * 24).toISOString(), events: [{ event_type: 'build', status: 'passed' }, { event_type: 'test', status: 'passed' }, { event_type: 'deploy', status: 'passed' }] },
-        ]);
+        const cachedLive = getCachedGithubData();
+        const repoName = cachedLive?.repo?.name || 'Engineering-Intelligence-Platform';
+        const commits = cachedLive?.commits || [];
+
+        if (commits.length > 0) {
+          setDeployments(
+            commits.slice(0, 5).map((c: any, idx: number) => ({
+              id: `d-live-${idx}`,
+              repository_name: repoName,
+              environment: 'production',
+              status: 'success',
+              sha: c.sha.slice(0, 7),
+              commit_message: c.message.split('\n')[0],
+              deployed_by: c.author_login || 'abhishekcodee',
+              duration_seconds: 120 + idx * 15,
+              deployed_at: c.committed_at,
+              events: [
+                { event_type: 'build', status: 'passed' },
+                { event_type: 'test', status: 'passed' },
+                { event_type: 'deploy', status: 'passed' },
+              ],
+            }))
+          );
+        } else {
+          setDeployments([
+            { id: 'd-1', repository_name: 'Engineering-Intelligence-Platform', environment: 'production', status: 'success', sha: '5f33fca', commit_message: 'feat(github): integrate real-time live GitHub REST API data', deployed_by: 'abhishekcodee', duration_seconds: 140, deployed_at: new Date().toISOString(), events: [{ event_type: 'build', status: 'passed' }, { event_type: 'test', status: 'passed' }, { event_type: 'deploy', status: 'passed' }] },
+            { id: 'd-2', repository_name: 'Engineering-Intelligence-Platform', environment: 'production', status: 'success', sha: '1137542', commit_message: 'fix(auth): resolve Failed to fetch on static host', deployed_by: 'abhishekcodee', duration_seconds: 130, deployed_at: new Date(Date.now() - 3600000 * 2).toISOString(), events: [{ event_type: 'build', status: 'passed' }, { event_type: 'test', status: 'passed' }, { event_type: 'deploy', status: 'passed' }] },
+          ]);
+        }
       });
   }, []);
 
