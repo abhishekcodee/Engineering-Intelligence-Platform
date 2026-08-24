@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -23,6 +24,11 @@ export function Header() {
   const { user, org, theme, toggleTheme, logout } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const getPageTitle = () => {
     const item = navItems.find(
@@ -38,6 +44,7 @@ export function Header() {
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="md:hidden flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+          aria-label="Toggle Navigation Menu"
         >
           {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
@@ -130,19 +137,19 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile Menu Drawer & Overlay */}
-      {isMobileMenuOpen && (
+      {/* Mobile Menu Drawer Portal */}
+      {isMobileMenuOpen && isMounted && createPortal(
         <>
-          {/* Backdrop Blur Overlay */}
+          {/* Backdrop Overlay */}
           <div
             onClick={() => setIsMobileMenuOpen(false)}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden transition-opacity"
+            className="fixed inset-0 bg-black/70 backdrop-blur-md z-[9999] md:hidden transition-opacity"
           />
 
-          {/* Slide-out Mobile Drawer */}
-          <div className="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 flex flex-col p-4 shadow-2xl md:hidden overflow-y-auto">
+          {/* Full Height Slide-out Mobile Drawer */}
+          <div className="fixed inset-y-0 left-0 z-[10000] w-72 max-w-[85vw] bg-zinc-950 text-white border-r border-zinc-800 flex flex-col p-4 shadow-2xl md:hidden overflow-y-auto">
             {/* Drawer Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800 mb-3">
+            <div className="flex items-center justify-between pb-4 border-b border-zinc-800 mb-3 shrink-0">
               <Link
                 href="/overview"
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -152,30 +159,30 @@ export function Header() {
                   <Zap className="h-5 w-5" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-bold tracking-tight text-zinc-900 dark:text-white text-base">DevPulse</span>
-                  <span className="text-[10px] text-zinc-500 font-medium tracking-wider uppercase">Intelligence</span>
+                  <span className="font-bold tracking-tight text-white text-base">DevPulse</span>
+                  <span className="text-[10px] text-zinc-400 font-medium tracking-wider uppercase">Intelligence</span>
                 </div>
               </Link>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="h-8 w-8 flex items-center justify-center rounded-md text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+                className="h-9 w-9 flex items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-900 hover:text-white"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             {/* Mobile Search Bar */}
-            <div className="relative mb-4">
+            <div className="relative mb-4 shrink-0">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-400" />
               <input
                 type="text"
                 placeholder="Search PRs, repos, developers..."
-                className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 pl-9 pr-3 py-2 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-zinc-800 bg-zinc-900 pl-9 pr-3 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
 
             {/* Navigation Links */}
-            <nav className="flex-1 space-y-1">
+            <nav className="flex-1 space-y-1.5 overflow-y-auto pr-1">
               {navItems.map((item) => {
                 const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
                 const Icon = item.icon;
@@ -186,19 +193,19 @@ export function Header() {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                       isActive
-                        ? 'bg-zinc-900 text-white dark:bg-zinc-800 dark:text-white'
-                        : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-white'
+                        ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
+                        : 'text-zinc-400 hover:bg-zinc-900 hover:text-white'
                     }`}
                   >
                     <Icon className={`h-4 w-4 shrink-0 ${item.isAi ? 'text-indigo-400 animate-pulse' : ''}`} />
                     <span className="flex-1 truncate">{item.label}</span>
                     {item.badge && (
-                      <span className="rounded bg-indigo-100 dark:bg-indigo-950 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
+                      <span className="rounded bg-indigo-950 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-400 border border-indigo-800">
                         {item.badge}
                       </span>
                     )}
                     {item.badgeCount && (
-                      <span className="rounded-full bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
+                      <span className="rounded-full bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-amber-400">
                         {item.badgeCount}
                       </span>
                     )}
@@ -208,21 +215,22 @@ export function Header() {
             </nav>
 
             {/* Mobile Org Badge Footer */}
-            <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800 mt-auto">
-              <div className="flex items-center gap-3 rounded-lg bg-zinc-50 dark:bg-zinc-900 p-2.5 border border-zinc-200/80 dark:border-zinc-800/80">
-                <div className="h-7 w-7 rounded bg-indigo-500/20 text-indigo-500 flex items-center justify-center font-bold text-xs">
+            <div className="pt-3 border-t border-zinc-800 mt-auto shrink-0">
+              <div className="flex items-center gap-3 rounded-lg bg-zinc-900 p-2.5 border border-zinc-800">
+                <div className="h-7 w-7 rounded bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-xs">
                   DP
                 </div>
                 <div className="flex flex-col truncate">
-                  <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+                  <span className="text-xs font-semibold text-white truncate">
                     {org?.name || 'DevPulse Org'}
                   </span>
-                  <span className="text-[10px] text-zinc-500">Enterprise Edition</span>
+                  <span className="text-[10px] text-zinc-400">Enterprise Edition</span>
                 </div>
               </div>
             </div>
           </div>
-        </>
+        </>,
+        document.body
       )}
     </header>
   );
