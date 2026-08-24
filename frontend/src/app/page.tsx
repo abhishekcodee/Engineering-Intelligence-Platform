@@ -50,18 +50,18 @@ export default function PublicLandingPage() {
           Connect your software development workflow, measure real DORA performance, prevent pull request bottlenecks, and turn dev activity into actionable AI insights. All features are completely free forever.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+        <div className="flex flex-row items-center justify-center gap-3 sm:gap-4 pt-4">
           <Link
             href="/register"
-            className="w-full sm:w-auto px-6 py-3 rounded-xl bg-indigo-600 text-sm font-semibold text-white hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2"
+            className="px-6 py-3 rounded-xl bg-indigo-600 text-sm font-semibold text-white hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2"
           >
-            Get Started (100% Free) <ArrowRight className="h-4 w-4" />
+            Get Started <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
             href="/overview"
-            className="w-full sm:w-auto px-6 py-3 rounded-xl border border-zinc-800 bg-zinc-900/80 text-sm font-semibold text-zinc-300 hover:bg-zinc-800 transition-all"
+            className="px-6 py-3 rounded-xl border border-zinc-800 bg-zinc-900/80 text-sm font-semibold text-zinc-300 hover:bg-zinc-800 transition-all flex items-center justify-center gap-2"
           >
-            Explore Live Demo
+            Live Demo <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
 
