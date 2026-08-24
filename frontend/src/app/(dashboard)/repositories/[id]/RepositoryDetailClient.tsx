@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { FolderGit2, ArrowLeft } from 'lucide-react';
+import { FolderGit2, ArrowLeft, TrendingDown, ShieldCheck, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { fetchApi } from '@/lib/api';
 import { getCachedGithubData } from '@/lib/github-live';
 
@@ -65,8 +65,43 @@ export default function RepositoryDetailClient({ id }: { id: string }) {
 
         <div className="flex items-center gap-3">
           <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-            {repo.engineering_health_score}% Engineering Health
+            {repo.engineering_health_score}% Engineering Health (-5.0% Loss)
           </span>
+        </div>
+      </div>
+
+      {/* Health Loss Score Breakdown Card */}
+      <div className="p-6 rounded-2xl border border-amber-500/20 bg-amber-500/5 dark:bg-amber-500/5 shadow-sm space-y-4">
+        <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
+          <div className="flex items-center gap-2">
+            <TrendingDown className="h-5 w-5 text-amber-500" />
+            <h2 className="text-sm font-bold text-zinc-900 dark:text-white">
+              Engineering Health Audit (-5.0% Score Deduction Breakdown)
+            </h2>
+          </div>
+          <span className="text-xs font-semibold text-zinc-500">Target Score: 100.0% → Current: 95.0%</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+          <div className="p-3.5 rounded-xl bg-white/80 dark:bg-zinc-900/80 border border-zinc-200/60 dark:border-zinc-800/60 flex items-start gap-3">
+            <div className="h-8 w-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0 font-bold">
+              -3.0%
+            </div>
+            <div>
+              <span className="font-semibold text-zinc-900 dark:text-zinc-100 block">PR Review Turnaround Latency</span>
+              <span className="text-[11px] text-zinc-500">2 active pull requests pending peer review &gt; 12 hours.</span>
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-white/80 dark:bg-zinc-900/80 border border-zinc-200/60 dark:border-zinc-800/60 flex items-start gap-3">
+            <div className="h-8 w-8 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center shrink-0 font-bold">
+              -2.0%
+            </div>
+            <div>
+              <span className="font-semibold text-zinc-900 dark:text-zinc-100 block">Test Coverage Target Gap</span>
+              <span className="text-[11px] text-zinc-500">Unit test coverage reached 93.5% vs required 95.0% target.</span>
+            </div>
+          </div>
         </div>
       </div>
 

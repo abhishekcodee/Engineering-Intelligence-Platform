@@ -82,11 +82,16 @@ export default function RepositoriesPage() {
                     {repo.name}
                   </span>
                 </div>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
-                  {repo.engineering_health_score}% Health
+              <div className="flex flex-col items-end gap-1">
+                <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                  {repo.engineering_health_score}% Health (-5% loss)
+                </span>
+                <span className="text-[9px] font-medium text-amber-500/90 bg-amber-500/5 px-2 py-0.5 rounded border border-amber-500/10">
+                  -3% PR Review Latency | -2% Coverage Gap
                 </span>
               </div>
-              <p className="text-xs text-zinc-500 mt-2 line-clamp-2">{repo.description}</p>
+            </div>
+            <p className="text-xs text-zinc-500 mt-2 line-clamp-2">{repo.description}</p>
             </div>
 
             <div className="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-800/60 flex items-center justify-between text-xs text-zinc-500">
