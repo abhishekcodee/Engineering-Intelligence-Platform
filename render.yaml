@@ -26,7 +26,7 @@ services:
         generateValue: true
 
       - key: CORS_ORIGINS
-        value: https://abhishekcodee.github.io
+         value: '["https://abhishekcodee.github.io"]'
 
 databases:
   - name: devpulse-db
