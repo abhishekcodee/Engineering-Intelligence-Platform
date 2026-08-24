@@ -130,31 +130,99 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Menu Drawer & Overlay */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 top-16 z-50 flex flex-col bg-white dark:bg-zinc-950 p-4 md:hidden border-t border-zinc-200 dark:border-zinc-800 overflow-y-auto">
-          <nav className="flex-1 space-y-1">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href;
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium ${
-                    isActive
-                      ? 'bg-zinc-900 text-white dark:bg-zinc-800 dark:text-white'
-                      : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900'
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
+        <>
+          {/* Backdrop Blur Overlay */}
+          <div
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden transition-opacity"
+          />
+
+          {/* Slide-out Mobile Drawer */}
+          <div className="fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] bg-white dark:bg-zinc-950 border-r border-zinc-200 dark:border-zinc-800 flex flex-col p-4 shadow-2xl md:hidden overflow-y-auto">
+            {/* Drawer Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-zinc-200 dark:border-zinc-800 mb-3">
+              <Link
+                href="/overview"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-3"
+              >
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-white font-bold shadow-md shadow-indigo-500/20">
+                  <Zap className="h-5 w-5" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-bold tracking-tight text-zinc-900 dark:text-white text-base">DevPulse</span>
+                  <span className="text-[10px] text-zinc-500 font-medium tracking-wider uppercase">Intelligence</span>
+                </div>
+              </Link>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="h-8 w-8 flex items-center justify-center rounded-md text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-900"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Mobile Search Bar */}
+            <div className="relative mb-4">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-zinc-400" />
+              <input
+                type="text"
+                placeholder="Search PRs, repos, developers..."
+                className="w-full rounded-md border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 pl-9 pr-3 py-2 text-xs text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              />
+            </div>
+
+            {/* Navigation Links */}
+            <nav className="flex-1 space-y-1">
+              {navItems.map((item) => {
+                const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-zinc-900 text-white dark:bg-zinc-800 dark:text-white'
+                        : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 hover:text-zinc-900 dark:hover:text-white'
+                    }`}
+                  >
+                    <Icon className={`h-4 w-4 shrink-0 ${item.isAi ? 'text-indigo-400 animate-pulse' : ''}`} />
+                    <span className="flex-1 truncate">{item.label}</span>
+                    {item.badge && (
+                      <span className="rounded bg-indigo-100 dark:bg-indigo-950 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
+                        {item.badge}
+                      </span>
+                    )}
+                    {item.badgeCount && (
+                      <span className="rounded-full bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600 dark:text-amber-400">
+                        {item.badgeCount}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* Mobile Org Badge Footer */}
+            <div className="pt-3 border-t border-zinc-200 dark:border-zinc-800 mt-auto">
+              <div className="flex items-center gap-3 rounded-lg bg-zinc-50 dark:bg-zinc-900 p-2.5 border border-zinc-200/80 dark:border-zinc-800/80">
+                <div className="h-7 w-7 rounded bg-indigo-500/20 text-indigo-500 flex items-center justify-center font-bold text-xs">
+                  DP
+                </div>
+                <div className="flex flex-col truncate">
+                  <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 truncate">
+                    {org?.name || 'DevPulse Org'}
+                  </span>
+                  <span className="text-[10px] text-zinc-500">Enterprise Edition</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </header>
   );

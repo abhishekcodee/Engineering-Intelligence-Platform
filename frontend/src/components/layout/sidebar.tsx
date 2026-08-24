@@ -49,7 +49,7 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`relative flex flex-col border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 transition-all duration-300 z-30 ${
+      className={`hidden md:flex relative flex-col border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 transition-all duration-300 z-30 ${
         isCollapsed ? 'w-16' : 'w-64'
       }`}
     >

@@ -95,32 +95,34 @@ export default function SettingsPage() {
                 Invite Member
               </button>
             </div>
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-zinc-200 dark:border-zinc-800 text-zinc-400">
-                  <th className="pb-2">User</th>
-                  <th className="pb-2">Email</th>
-                  <th className="pb-2">Role</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-zinc-200/60 dark:divide-zinc-800/60">
-                <tr>
-                  <td className="py-2.5 font-bold">Alex Mercer</td>
-                  <td className="py-2.5 text-zinc-500">alex.owner@devpulse.io</td>
-                  <td className="py-2.5 font-bold text-indigo-500">OWNER</td>
-                </tr>
-                <tr>
-                  <td className="py-2.5 font-bold">Sarah Chen</td>
-                  <td className="py-2.5 text-zinc-500">sarah.manager@devpulse.io</td>
-                  <td className="py-2.5 font-bold text-indigo-400">ENGINEERING_MANAGER</td>
-                </tr>
-                <tr>
-                  <td className="py-2.5 font-bold">David Kim</td>
-                  <td className="py-2.5 text-zinc-500">david.dev@devpulse.io</td>
-                  <td className="py-2.5 text-zinc-500">DEVELOPER</td>
-                </tr>
-              </tbody>
-            </table>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-zinc-200 dark:border-zinc-800 text-zinc-400">
+                    <th className="pb-2">User</th>
+                    <th className="pb-2">Email</th>
+                    <th className="pb-2">Role</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-200/60 dark:divide-zinc-800/60">
+                  <tr>
+                    <td className="py-2.5 font-bold">Alex Mercer</td>
+                    <td className="py-2.5 text-zinc-500">alex.owner@devpulse.io</td>
+                    <td className="py-2.5 font-bold text-indigo-500">OWNER</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2.5 font-bold">Sarah Chen</td>
+                    <td className="py-2.5 text-zinc-500">sarah.manager@devpulse.io</td>
+                    <td className="py-2.5 font-bold text-indigo-400">ENGINEERING_MANAGER</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2.5 font-bold">David Kim</td>
+                    <td className="py-2.5 text-zinc-500">david.dev@devpulse.io</td>
+                    <td className="py-2.5 text-zinc-500">DEVELOPER</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 
@@ -144,15 +146,16 @@ export default function SettingsPage() {
         {activeTab === 'audit' && (
           <div className="space-y-4 text-xs">
             <h3 className="font-bold text-sm text-zinc-900 dark:text-white">Organization Audit Trail</h3>
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-zinc-200 dark:border-zinc-800 text-zinc-400">
-                  <th className="pb-2">Action</th>
-                  <th className="pb-2">User</th>
-                  <th className="pb-2">IP Address</th>
-                  <th className="pb-2">Timestamp</th>
-                </tr>
-              </thead>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="border-b border-zinc-200 dark:border-zinc-800 text-zinc-400">
+                    <th className="pb-2">Action</th>
+                    <th className="pb-2">User</th>
+                    <th className="pb-2">IP Address</th>
+                    <th className="pb-2">Timestamp</th>
+                  </tr>
+                </thead>
               <tbody className="divide-y divide-zinc-200/60 dark:divide-zinc-800/60">
                 {auditLogs.map((log) => (
                   <tr key={log.id}>
@@ -164,6 +167,7 @@ export default function SettingsPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         )}
 
