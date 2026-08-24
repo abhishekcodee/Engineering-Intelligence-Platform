@@ -1,0 +1,31 @@
+(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[461],{59915:function(e,t,s){Promise.resolve().then(s.bind(s,38743))},78030:function(e,t,s){"use strict";s.d(t,{Z:function(){return o}});var n=s(2265);/**
+ * @license lucide-react v0.378.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */let r=e=>e.replace(/([a-z0-9])([A-Z])/g,"$1-$2").toLowerCase(),i=function(){for(var e=arguments.length,t=Array(e),s=0;s<e;s++)t[s]=arguments[s];return t.filter((e,t,s)=>!!e&&s.indexOf(e)===t).join(" ")};/**
+ * @license lucide-react v0.378.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */var a={xmlns:"http://www.w3.org/2000/svg",width:24,height:24,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round"};/**
+ * @license lucide-react v0.378.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */let c=(0,n.forwardRef)((e,t)=>{let{color:s="currentColor",size:r=24,strokeWidth:c=2,absoluteStrokeWidth:o,className:l="",children:d,iconNode:u,...x}=e;return(0,n.createElement)("svg",{ref:t,...a,width:r,height:r,stroke:s,strokeWidth:o?24*Number(c)/Number(r):c,className:i("lucide",l),...x},[...u.map(e=>{let[t,s]=e;return(0,n.createElement)(t,s)}),...Array.isArray(d)?d:[d]])}),o=(e,t)=>{let s=(0,n.forwardRef)((s,a)=>{let{className:o,...l}=s;return(0,n.createElement)(c,{ref:a,iconNode:t,className:i("lucide-".concat(r(e)),o),...l})});return s.displayName="".concat(e),s}},71976:function(e,t,s){"use strict";s.d(t,{Z:function(){return n}});/**
+ * @license lucide-react v0.378.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */let n=(0,s(78030).Z)("ArrowRight",[["path",{d:"M5 12h14",key:"1ays0h"}],["path",{d:"m12 5 7 7-7 7",key:"xquz4c"}]])},51815:function(e,t,s){"use strict";s.d(t,{Z:function(){return n}});/**
+ * @license lucide-react v0.378.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */let n=(0,s(78030).Z)("Plug",[["path",{d:"M12 22v-5",key:"1ega77"}],["path",{d:"M9 8V2",key:"14iosj"}],["path",{d:"M15 8V2",key:"18g5xt"}],["path",{d:"M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z",key:"osxo6l"}]])},55430:function(e,t,s){"use strict";s.d(t,{Z:function(){return n}});/**
+ * @license lucide-react v0.378.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */let n=(0,s(78030).Z)("Zap",[["path",{d:"M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z",key:"1xq2db"}]])},16463:function(e,t,s){"use strict";var n=s(71169);s.o(n,"usePathname")&&s.d(t,{usePathname:function(){return n.usePathname}}),s.o(n,"useRouter")&&s.d(t,{useRouter:function(){return n.useRouter}})},38743:function(e,t,s){"use strict";s.r(t),s.d(t,{default:function(){return l}});var n=s(57437),r=s(2265),i=s(16463),a=s(55430),c=s(51815),o=s(71976);function l(){let e=(0,i.useRouter)(),[t,s]=(0,r.useState)(1);return(0,n.jsxs)("div",{className:"min-h-screen bg-zinc-950 flex flex-col justify-center py-12 px-6 text-white",children:[(0,n.jsxs)("div",{className:"sm:mx-auto sm:w-full sm:max-w-lg text-center space-y-4",children:[(0,n.jsx)("div",{className:"inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 font-bold shadow-lg shadow-indigo-500/20",children:(0,n.jsx)(a.Z,{className:"h-6 w-6 text-white"})}),(0,n.jsx)("h1",{className:"text-3xl font-bold tracking-tight",children:"Welcome to DevPulse"}),(0,n.jsx)("p",{className:"text-xs text-zinc-400",children:"Let’s connect your development tools and initialize your engineering dashboard."})]}),(0,n.jsx)("div",{className:"mt-8 sm:mx-auto sm:w-full sm:max-w-lg",children:(0,n.jsxs)("div",{className:"bg-zinc-900/60 p-8 rounded-2xl border border-zinc-800 shadow-xl space-y-6",children:[(0,n.jsxs)("div",{className:"flex items-center justify-between border-b border-zinc-800 pb-4 text-xs font-semibold text-zinc-400",children:[(0,n.jsx)("span",{className:t>=1?"text-indigo-400":"",children:"1. Connect GitHub"}),(0,n.jsx)("span",{className:t>=2?"text-indigo-400":"",children:"2. Select Repos"}),(0,n.jsx)("span",{className:t>=3?"text-indigo-400":"",children:"3. Launch Dashboard"})]}),1===t&&(0,n.jsxs)("div",{className:"space-y-4 text-center",children:[(0,n.jsx)(c.Z,{className:"h-10 w-10 text-indigo-400 mx-auto"}),(0,n.jsx)("h3",{className:"font-bold text-base",children:"Authorize GitHub Integration"}),(0,n.jsx)("p",{className:"text-xs text-zinc-400",children:"Grant DevPulse read access to sync repositories, commits, PRs, and workflow runs."}),(0,n.jsxs)("button",{onClick:()=>s(2),className:"w-full py-2.5 rounded-lg bg-indigo-600 font-semibold hover:bg-indigo-500 flex items-center justify-center gap-2 text-xs",children:["Connect GitHub Account ",(0,n.jsx)(o.Z,{className:"h-4 w-4"})]})]}),2===t&&(0,n.jsxs)("div",{className:"space-y-4 text-xs",children:[(0,n.jsx)("h3",{className:"font-bold text-base text-center",children:"Select Repositories to Monitor"}),(0,n.jsx)("div",{className:"space-y-2",children:["payments-api","web-platform","mobile-app","auth-service"].map(e=>(0,n.jsxs)("label",{className:"flex items-center justify-between p-3 rounded-lg bg-zinc-950 border border-zinc-800 cursor-pointer",children:[(0,n.jsx)("span",{className:"font-semibold text-white",children:e}),(0,n.jsx)("input",{type:"checkbox",defaultChecked:!0,className:"rounded border-zinc-700 bg-zinc-900 text-indigo-600 focus:ring-0"})]},e))}),(0,n.jsxs)("button",{onClick:()=>e.push("/overview"),className:"w-full py-2.5 rounded-lg bg-indigo-600 font-semibold hover:bg-indigo-500 text-xs flex items-center justify-center gap-2",children:["Start Ingesting & Launch ",(0,n.jsx)(o.Z,{className:"h-4 w-4"})]})]})]})})]})}}},function(e){e.O(0,[971,23,744],function(){return e(e.s=59915)}),_N_E=e.O()}]);

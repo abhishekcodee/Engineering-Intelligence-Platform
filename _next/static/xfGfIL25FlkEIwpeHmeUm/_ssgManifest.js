@@ -1,0 +1,1 @@
+self.__SSG_MANIFEST=new Set(["\u002Fdevelopers\u002F[id]","\u002Fpull-requests\u002F[id]","\u002Frepositories\u002F[id]"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()
