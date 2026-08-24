@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { GitPullRequest, Sparkles, Filter, AlertTriangle, ShieldCheck, Clock } from 'lucide-react';
 import { fetchApi } from '@/lib/api';
+import { getCachedGithubData } from '@/lib/github-live';
 
 export default function PullRequestsPage() {
   const [prs, setPrs] = useState<any[]>([]);
@@ -14,12 +15,33 @@ export default function PullRequestsPage() {
     fetchApi<any[]>('/pull-requests')
       .then((data) => setPrs(data))
       .catch(() => {
-        setPrs([
-          { id: 'pr-1', number: 105, title: 'feat: integrate Stripe Webhook idempotency keys for checkout', repository_name: 'payments-api', author_username: 'davidkim', status: 'open', review_time_hours: 4.2, cycle_time_hours: 18.5, additions: 780, deletions: 210, files_changed: 9, risk_level: 'Critical', reviewer_username: 'sarahchen' },
-          { id: 'pr-2', number: 102, title: 'feat: add multi-factor authentication SMS fallback endpoint', repository_name: 'auth-service', author_username: 'elenarostova', status: 'open', review_time_hours: 3.5, cycle_time_hours: 22.0, additions: 540, deletions: 80, files_changed: 7, risk_level: 'High', reviewer_username: 'sarahchen' },
-          { id: 'pr-3', number: 101, title: 'refactor: optimize database connection pooling & retry logic', repository_name: 'payments-api', author_username: 'davidkim', status: 'open', review_time_hours: 2.8, cycle_time_hours: 12.4, additions: 320, deletions: 140, files_changed: 5, risk_level: 'Medium', reviewer_username: 'alexmercer' },
-          { id: 'pr-4', number: 103, title: 'fix: resolve memory leak in web analytics dashboard charts', repository_name: 'web-platform', author_username: 'marcusv', status: 'merged', review_time_hours: 1.5, cycle_time_hours: 8.2, additions: 85, deletions: 42, files_changed: 3, risk_level: 'Low', reviewer_username: 'sarahchen' },
-        ]);
+        const cachedLive = getCachedGithubData();
+        if (cachedLive && cachedLive.prs && cachedLive.prs.length > 0) {
+          setPrs(
+            cachedLive.prs.map((p: any) => ({
+              id: `pr-${p.number}`,
+              number: p.number,
+              title: p.title,
+              repository_name: cachedLive.repo?.name || 'Engineering-Intelligence-Platform',
+              author_username: p.author_username || 'abhishekcodee',
+              status: p.status,
+              review_time_hours: 3.5,
+              cycle_time_hours: 14.2,
+              additions: 145,
+              deletions: 32,
+              files_changed: 4,
+              risk_level: p.number % 3 === 0 ? 'High' : p.number % 2 === 0 ? 'Medium' : 'Low',
+              reviewer_username: 'sarahchen',
+            }))
+          );
+        } else {
+          setPrs([
+            { id: 'pr-1', number: 105, title: 'feat(auth): implement production-level database authentication', repository_name: 'Engineering-Intelligence-Platform', author_username: 'abhishekcodee', status: 'merged', review_time_hours: 4.2, cycle_time_hours: 18.5, additions: 306, deletions: 142, files_changed: 4, risk_level: 'Low', reviewer_username: 'sarahchen' },
+            { id: 'pr-2', number: 102, title: 'fix(mobile): render mobile navigation drawer at document body level', repository_name: 'Engineering-Intelligence-Platform', author_username: 'abhishekcodee', status: 'merged', review_time_hours: 2.0, cycle_time_hours: 4.0, additions: 32, deletions: 24, files_changed: 1, risk_level: 'Low', reviewer_username: 'sarahchen' },
+            { id: 'pr-3', number: 101, title: 'feat(ui): make DevPulse frontend fully mobile-friendly', repository_name: 'Engineering-Intelligence-Platform', author_username: 'abhishekcodee', status: 'merged', review_time_hours: 6.4, cycle_time_hours: 12.4, additions: 132, deletions: 60, files_changed: 3, risk_level: 'Medium', reviewer_username: 'alexmercer' },
+            { id: 'pr-4', number: 100, title: 'ci: enable automatic GitHub Pages deployment workflow', repository_name: 'Engineering-Intelligence-Platform', author_username: 'abhishekcodee', status: 'merged', review_time_hours: 1.2, cycle_time_hours: 2.5, additions: 65, deletions: 10, files_changed: 1, risk_level: 'Low', reviewer_username: 'sarahchen' },
+          ]);
+        }
       });
   }, []);
 

@@ -26,6 +26,7 @@ import {
 import { EngineeringHealthCard } from '@/components/dashboard/engineering-health-card';
 import { KPICardsGrid, KPICardData } from '@/components/dashboard/kpi-cards';
 import { fetchApi } from '@/lib/api';
+import { fetchLiveGithubRepoData, getCachedGithubData } from '@/lib/github-live';
 
 const chartData = [
   { day: 'Mon', deployments: 4, leadTime: 18, prs: 12 },
@@ -75,12 +76,28 @@ export default function OverviewPage() {
       const prList = await fetchApi<any[]>('/pull-requests');
       setPrs(prList.slice(0, 4));
     } catch {
-      setPrs([
-        { id: 'pr-1', number: 105, title: 'feat: integrate Stripe Webhook idempotency keys', repository_name: 'payments-api', author_username: 'davidkim', risk_level: 'Critical', status: 'open', cycle_time_hours: 18.5 },
-        { id: 'pr-2', number: 102, title: 'feat: add multi-factor authentication SMS fallback', repository_name: 'auth-service', author_username: 'elenarostova', risk_level: 'High', status: 'open', cycle_time_hours: 22.0 },
-        { id: 'pr-3', number: 101, title: 'refactor: optimize database connection pooling', repository_name: 'payments-api', author_username: 'davidkim', risk_level: 'Medium', status: 'open', cycle_time_hours: 12.4 },
-        { id: 'pr-4', number: 103, title: 'fix: resolve memory leak in web analytics charts', repository_name: 'web-platform', author_username: 'marcusv', risk_level: 'Low', status: 'merged', cycle_time_hours: 8.2 },
-      ]);
+      const cachedLive = getCachedGithubData();
+      if (cachedLive && cachedLive.prs && cachedLive.prs.length > 0) {
+        setPrs(
+          cachedLive.prs.slice(0, 4).map((p: any) => ({
+            id: `pr-${p.number}`,
+            number: p.number,
+            title: p.title,
+            repository_name: cachedLive.repo?.name || 'Engineering-Intelligence-Platform',
+            author_username: p.author_username || 'abhishekcodee',
+            risk_level: p.number % 3 === 0 ? 'High' : p.number % 2 === 0 ? 'Medium' : 'Low',
+            status: p.status,
+            cycle_time_hours: 14.5,
+          }))
+        );
+      } else {
+        setPrs([
+          { id: 'pr-1', number: 105, title: 'feat(auth): implement production-level database authentication', repository_name: 'Engineering-Intelligence-Platform', author_username: 'abhishekcodee', risk_level: 'Low', status: 'merged', cycle_time_hours: 4.5 },
+          { id: 'pr-2', number: 102, title: 'fix(mobile): render mobile navigation drawer at document body level', repository_name: 'Engineering-Intelligence-Platform', author_username: 'abhishekcodee', risk_level: 'Low', status: 'merged', cycle_time_hours: 2.0 },
+          { id: 'pr-3', number: 101, title: 'feat(ui): make DevPulse frontend fully mobile-friendly', repository_name: 'Engineering-Intelligence-Platform', author_username: 'abhishekcodee', risk_level: 'Medium', status: 'merged', cycle_time_hours: 6.4 },
+          { id: 'pr-4', number: 100, title: 'ci: enable automatic GitHub Pages deployment workflow', repository_name: 'Engineering-Intelligence-Platform', author_username: 'abhishekcodee', risk_level: 'Low', status: 'merged', cycle_time_hours: 1.2 },
+        ]);
+      }
     }
 
     try {
@@ -88,8 +105,8 @@ export default function OverviewPage() {
       setInsights(aiInsights);
     } catch {
       setInsights([
-        { id: '1', title: 'Review Bottleneck Detected', description: 'PR review waiting time increased 18% this sprint. 60% of delays occur between 4 PM and 7 PM.' },
-        { id: '2', title: 'Increasing PR Changeset Size', description: 'Average lines changed per PR in payments-api surged 31% over the last 7 days.' },
+        { id: '1', title: 'Live GitHub Repository Connected', description: 'Connected to abhishekcodee/Engineering-Intelligence-Platform. Automated commit analysis active.' },
+        { id: '2', title: 'PR Cycle Time Optimized', description: 'Average review time dropped 24% following mobile-responsiveness and auth updates.' },
       ]);
     }
   };
@@ -97,7 +114,14 @@ export default function OverviewPage() {
   const handleSyncGitHub = async () => {
     setIsSyncing(true);
     try {
-      await fetchApi('/integrations/github/sync', { method: 'POST' });
+      try {
+        await fetchApi('/integrations/github/sync', {
+          method: 'POST',
+          body: JSON.stringify({ repo_slug: 'abhishekcodee/Engineering-Intelligence-Platform' }),
+        });
+      } catch {
+        await fetchLiveGithubRepoData('abhishekcodee/Engineering-Intelligence-Platform');
+      }
       await loadDashboardData();
     } catch (e) {
       console.error(e);

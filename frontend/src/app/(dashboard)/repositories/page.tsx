@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FolderGit2, Star, GitPullRequest, AlertCircle, Rocket, ShieldCheck, Search } from 'lucide-react';
 import { fetchApi } from '@/lib/api';
+import { getCachedGithubData } from '@/lib/github-live';
 
 export default function RepositoriesPage() {
   const [repos, setRepos] = useState<any[]>([]);
@@ -13,12 +14,27 @@ export default function RepositoriesPage() {
     fetchApi<any[]>('/repositories')
       .then((data) => setRepos(data))
       .catch(() => {
-        setRepos([
-          { id: 'repo-1', name: 'payments-api', full_name: 'devpulse-org/payments-api', primary_language: 'Python', stars_count: 142, open_issues_count: 3, open_prs_count: 4, build_health: 'passing', engineering_health_score: 82.5, description: 'High-throughput Payment Gateway & Stripe Integration API' },
-          { id: 'repo-2', name: 'web-platform', full_name: 'devpulse-org/web-platform', primary_language: 'TypeScript', stars_count: 189, open_issues_count: 5, open_prs_count: 6, build_health: 'passing', engineering_health_score: 91.0, description: 'Next.js Main Customer Portal & Analytics Web App' },
-          { id: 'repo-3', name: 'mobile-app', full_name: 'devpulse-org/mobile-app', primary_language: 'React Native', stars_count: 98, open_issues_count: 2, open_prs_count: 2, build_health: 'passing', engineering_health_score: 88.5, description: 'Cross-platform mobile application for iOS & Android' },
-          { id: 'repo-4', name: 'auth-service', full_name: 'devpulse-org/auth-service', primary_language: 'Go', stars_count: 112, open_issues_count: 1, open_prs_count: 1, build_health: 'passing', engineering_health_score: 94.0, description: 'OAuth2 / OIDC Single Sign-On Authentication microservice' },
-        ]);
+        const cachedLive = getCachedGithubData();
+        const liveRepo = cachedLive?.repo;
+
+        const defaultRepos = [
+          {
+            id: 'repo-live-1',
+            name: liveRepo?.name || 'Engineering-Intelligence-Platform',
+            full_name: liveRepo?.full_name || 'abhishekcodee/Engineering-Intelligence-Platform',
+            primary_language: liveRepo?.language || 'TypeScript',
+            stars_count: liveRepo?.stargazers_count ?? 1,
+            open_issues_count: liveRepo?.open_issues_count ?? 0,
+            open_prs_count: cachedLive?.prs?.length || 4,
+            build_health: 'passing',
+            engineering_health_score: 95.0,
+            description: liveRepo?.description || 'DevPulse Engineering Intelligence Platform',
+            url: liveRepo?.html_url || 'https://github.com/abhishekcodee/Engineering-Intelligence-Platform',
+          },
+          { id: 'repo-2', name: 'web-platform', full_name: 'abhishekcodee/web-platform', primary_language: 'TypeScript', stars_count: 42, open_issues_count: 1, open_prs_count: 3, build_health: 'passing', engineering_health_score: 91.0, description: 'Next.js Customer Analytics & Web Application' },
+          { id: 'repo-3', name: 'auth-service', full_name: 'abhishekcodee/auth-service', primary_language: 'Python', stars_count: 28, open_issues_count: 0, open_prs_count: 1, build_health: 'passing', engineering_health_score: 94.0, description: 'FastAPI Microservice & OAuth Authentication' },
+        ];
+        setRepos(defaultRepos);
       });
   }, []);
 
