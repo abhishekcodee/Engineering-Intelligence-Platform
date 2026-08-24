@@ -16,6 +16,13 @@ const nextConfig = {
       },
     ];
   },
+  webpack: (config) => {
+    config.ignoreWarnings = [
+      { module: /node_modules/ },
+      /Failed to parse source map/,
+    ];
+    return config;
+  },
 };
 
 module.exports = nextConfig;
