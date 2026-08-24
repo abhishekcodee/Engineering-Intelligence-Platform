@@ -2,6 +2,7 @@ import RepositoryDetailClient from './RepositoryDetailClient';
 
 export function generateStaticParams() {
   return [
+    { id: 'repo-live-1' },
     { id: '1' },
     { id: '2' },
     { id: 'repo-1' },

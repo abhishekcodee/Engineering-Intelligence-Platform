@@ -2,6 +2,8 @@ import DeveloperDetailClient from './DeveloperDetailClient';
 
 export function generateStaticParams() {
   return [
+    { id: 'u-live-1' },
+    { id: 'u-live-2' },
     { id: '1' },
     { id: '2' },
     { id: 'dev-1' },

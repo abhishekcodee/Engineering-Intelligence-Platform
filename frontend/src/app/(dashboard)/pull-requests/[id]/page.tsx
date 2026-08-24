@@ -2,10 +2,12 @@ import PullRequestDetailClient from './PullRequestDetailClient';
 
 export function generateStaticParams() {
   return [
-    { id: '1' },
-    { id: '2' },
     { id: 'pr-1' },
-    { id: 'pr-2' }
+    { id: 'pr-2' },
+    { id: 'pr-3' },
+    { id: 'pr-4' },
+    { id: '1' },
+    { id: '2' }
   ];
 }
 

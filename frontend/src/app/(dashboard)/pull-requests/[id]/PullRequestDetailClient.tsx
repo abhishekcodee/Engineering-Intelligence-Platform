@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Sparkles, AlertTriangle, ShieldCheck, GitPullRequest } from 'lucide-react';
 import { fetchApi } from '@/lib/api';
+import { getCachedGithubData } from '@/lib/github-live';
 
 export default function PullRequestDetailClient({ id }: { id: string }) {
   const [pr, setPr] = useState<any>(null);
@@ -12,29 +13,33 @@ export default function PullRequestDetailClient({ id }: { id: string }) {
     fetchApi<any>(`/pull-requests/${id}`)
       .then((data) => setPr(data))
       .catch(() => {
+        const cachedLive = getCachedGithubData();
+        const repoName = cachedLive?.repo?.name || 'Engineering-Intelligence-Platform';
+        const prs = cachedLive?.prs || [];
+        const foundPr = prs.find((p: any) => `pr-${p.number}` === id || p.number?.toString() === id);
+
         setPr({
           id: id,
-          number: 105,
-          title: 'feat: integrate Stripe Webhook idempotency keys for checkout',
-          repository_name: 'payments-api',
-          author_username: 'davidkim',
-          status: 'open',
-          additions: 780,
-          deletions: 210,
-          files_changed: 9,
-          risk_level: 'Critical',
+          number: foundPr?.number || 1,
+          title: foundPr?.title || 'feat(analytics): connect real live GitHub repository data',
+          repository_name: repoName,
+          author_username: foundPr?.author_username || 'abhishekcodee',
+          status: foundPr?.status || 'merged',
+          additions: 185,
+          deletions: 42,
+          files_changed: 4,
+          risk_level: 'Low',
           risk_factors: [
-            'Large changeset (+780 / -210 lines) across 9 production files',
-            'Modifies Stripe checkout domain logic and database transactions',
-            'Multiple payment processing modules affected simultaneously'
+            'Continuous integration changes across frontend & dashboard pages',
+            'Synchronized live GitHub REST API data ingestion',
+            'Zero breaking database or schema changes'
           ],
           ai_recommendations: [
-            'Validate edge cases for webhook retry idempotency keys under concurrent stress',
-            'Add transactional rollback unit tests for Stripe payment failures',
-            'Verify database migration locks do not block active API workers'
+            'Maintain atomic PR commit size for rapid review turnaround',
+            'Run static export build verification before merging to main'
           ],
           ci_status: 'passing',
-          deployment_impact: 'Requires migration lock during low-traffic deployment window'
+          deployment_impact: 'Clean deployment executed directly via GitHub Actions'
         });
       });
   }, [id]);

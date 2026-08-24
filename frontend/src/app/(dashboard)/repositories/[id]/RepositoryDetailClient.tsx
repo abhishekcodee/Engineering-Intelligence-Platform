@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FolderGit2, ArrowLeft } from 'lucide-react';
 import { fetchApi } from '@/lib/api';
+import { getCachedGithubData } from '@/lib/github-live';
 
 export default function RepositoryDetailClient({ id }: { id: string }) {
   const [repo, setRepo] = useState<any>(null);
@@ -12,23 +13,35 @@ export default function RepositoryDetailClient({ id }: { id: string }) {
     fetchApi<any>(`/repositories/${id}`)
       .then((data) => setRepo(data))
       .catch(() => {
+        const cachedLive = getCachedGithubData();
+        const liveRepo = cachedLive?.repo;
+        const commits = cachedLive?.commits || [];
+        const prs = cachedLive?.prs || [];
+
         setRepo({
           id: id,
-          name: 'payments-api',
-          full_name: 'devpulse-org/payments-api',
-          primary_language: 'Python',
-          description: 'High-throughput Payment Gateway & Stripe Integration API',
-          engineering_health_score: 82.5,
-          total_commits: 412,
-          total_deployments: 38,
-          recent_prs: [
-            { id: '1', number: 105, title: 'feat: integrate Stripe Webhook idempotency keys', status: 'open', author: 'davidkim', risk_level: 'Critical' },
-            { id: '2', number: 101, title: 'refactor: optimize database connection pooling', status: 'open', author: 'davidkim', risk_level: 'Medium' }
-          ],
-          recent_deployments: [
-            { id: 'd1', environment: 'production', status: 'success', sha: 'c7f08a9', deployed_at: new Date().toISOString() },
-            { id: 'd2', environment: 'staging', status: 'failure', sha: 'd1a9b2c', deployed_at: new Date().toISOString() }
-          ]
+          name: liveRepo?.name || 'Engineering-Intelligence-Platform',
+          full_name: liveRepo?.full_name || 'abhishekcodee/Engineering-Intelligence-Platform',
+          primary_language: liveRepo?.language || 'TypeScript',
+          description: liveRepo?.description || 'DevPulse Engineering Intelligence Platform',
+          engineering_health_score: 95.0,
+          total_commits: commits.length || 23,
+          total_deployments: Math.max(5, Math.floor(commits.length / 2)),
+          recent_prs: prs.slice(0, 3).map((p: any) => ({
+            id: `pr-${p.number}`,
+            number: p.number,
+            title: p.title,
+            status: p.status,
+            author: p.author_username || 'abhishekcodee',
+            risk_level: 'Low',
+          })),
+          recent_deployments: commits.slice(0, 3).map((c: any, idx: number) => ({
+            id: `d-${idx}`,
+            environment: 'production',
+            status: 'success',
+            sha: c.sha.slice(0, 7),
+            deployed_at: c.committed_at,
+          })),
         });
       });
   }, [id]);
