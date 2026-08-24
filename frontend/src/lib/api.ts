@@ -1,3 +1,5 @@
+import { dbLogin, dbRegister, dbGetMe } from './auth-db';
+
 function getApiBaseUrl(): string {
   let url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
   if (url.endsWith('/')) {
@@ -43,6 +45,29 @@ export async function fetchApi<T>(
 
     return await res.json();
   } catch (error: any) {
+    // If backend returned explicit HTTP status error (e.g. 401 "Incorrect email or password"), preserve it
+    if (
+      error.message &&
+      !error.message.includes('Failed to fetch') &&
+      !error.message.includes('NetworkError') &&
+      !error.message.includes('Load failed')
+    ) {
+      throw error;
+    }
+
+    // Backend server is unreachable (offline / static hosting): Use client database engine for authentication
+    if (endpoint === '/auth/login' && options.method === 'POST') {
+      const body = JSON.parse((options.body as string) || '{}');
+      return dbLogin(body) as unknown as T;
+    }
+    if (endpoint === '/auth/register' && options.method === 'POST') {
+      const body = JSON.parse((options.body as string) || '{}');
+      return dbRegister(body) as unknown as T;
+    }
+    if (endpoint === '/auth/me' && token) {
+      return dbGetMe(token) as unknown as T;
+    }
+
     console.warn(`API request to ${endpoint} failed:`, error.message);
     throw error;
   }
