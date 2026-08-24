@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Users2, GitPullRequest, GitCommit, Sparkles, Clock, CheckCircle2 } from 'lucide-react';
 import { fetchApi } from '@/lib/api';
+import { getCachedGithubData } from '@/lib/github-live';
 
 export default function DevelopersPage() {
   const [developers, setDevelopers] = useState<any[]>([]);
@@ -12,12 +13,28 @@ export default function DevelopersPage() {
     fetchApi<any[]>('/developers')
       .then((data) => setDevelopers(data))
       .catch(() => {
+        const cachedLive = getCachedGithubData();
+        const commitsCount = cachedLive?.commits?.length || 18;
+        const prsCount = cachedLive?.prs?.length || 6;
+
         setDevelopers([
-          { user_id: 'u1', full_name: 'Alex Mercer', role: 'OWNER', github_username: 'alexmercer', team_name: 'Platform', commits_count: 42, prs_created_count: 14, prs_reviewed_count: 28, avg_pr_cycle_time_hours: 14.2, avg_review_time_hours: 2.8, lines_added: 5820, lines_deleted: 1420, insights: ['Maintains small PR size', 'Responsive reviewer (< 3 hrs)'] },
-          { user_id: 'u2', full_name: 'Sarah Chen', role: 'ENGINEERING_MANAGER', github_username: 'sarahchen', team_name: 'Backend', commits_count: 28, prs_created_count: 8, prs_reviewed_count: 36, avg_pr_cycle_time_hours: 16.5, avg_review_time_hours: 3.2, lines_added: 3410, lines_deleted: 980, insights: ['High code review participation', 'Strong domain expertise in payments'] },
-          { user_id: 'u3', full_name: 'David Kim', role: 'DEVELOPER', github_username: 'davidkim', team_name: 'Backend', commits_count: 56, prs_created_count: 18, prs_reviewed_count: 15, avg_pr_cycle_time_hours: 18.5, avg_review_time_hours: 4.1, lines_added: 8940, lines_deleted: 2450, insights: ['Handles high complexity payment features', 'Focus on integration test coverage'] },
-          { user_id: 'u4', full_name: 'Elena Rostova', role: 'DEVELOPER', github_username: 'elenarostova', team_name: 'Platform', commits_count: 38, prs_created_count: 12, prs_reviewed_count: 22, avg_pr_cycle_time_hours: 15.0, avg_review_time_hours: 3.5, lines_added: 4520, lines_deleted: 1100, insights: ['Auth microservice lead author', 'Zero regression rate'] },
-          { user_id: 'u5', full_name: 'Marcus Vance', role: 'DEVELOPER', github_username: 'marcusv', team_name: 'Frontend', commits_count: 44, prs_created_count: 16, prs_reviewed_count: 19, avg_pr_cycle_time_hours: 12.8, avg_review_time_hours: 2.9, lines_added: 6120, lines_deleted: 1800, insights: ['Design system contributor', 'Fast UI iteration cycle'] },
+          {
+            user_id: 'u-live-1',
+            full_name: 'Abhishek Upadhyay',
+            role: 'OWNER',
+            github_username: 'abhishekcodee',
+            team_name: 'Platform Engineering',
+            commits_count: commitsCount,
+            prs_created_count: prsCount,
+            prs_reviewed_count: 12,
+            avg_pr_cycle_time_hours: 11.4,
+            avg_review_time_hours: 1.8,
+            lines_added: 4210,
+            lines_deleted: 940,
+            insights: ['Primary repository maintainer for Engineering-Intelligence-Platform', 'Active continuous integration author'],
+          },
+          { user_id: 'u2', full_name: 'Sarah Chen', role: 'ENGINEERING_MANAGER', github_username: 'sarahchen', team_name: 'Backend', commits_count: 28, prs_created_count: 8, prs_reviewed_count: 36, avg_pr_cycle_time_hours: 16.5, avg_review_time_hours: 3.2, lines_added: 3410, lines_deleted: 980, insights: ['High code review participation', 'Strong domain expertise'] },
+          { user_id: 'u3', full_name: 'David Kim', role: 'DEVELOPER', github_username: 'davidkim', team_name: 'Backend', commits_count: 32, prs_created_count: 11, prs_reviewed_count: 15, avg_pr_cycle_time_hours: 18.5, avg_review_time_hours: 4.1, lines_added: 5940, lines_deleted: 1450, insights: ['Focus on integration test coverage'] },
         ]);
       });
   }, []);
