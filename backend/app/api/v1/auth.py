@@ -100,6 +100,49 @@ def get_me(current_user: User = Depends(get_current_user), db: Session = Depends
         role=role
     )
 
+import random
+from app.schemas.auth import Token, LoginRequest, RegisterRequest, UserResponse, PasswordResetRequest, VerifyOTPRequest
+
+otp_store: dict = {}
+
 @router.post("/forgot-password")
-def forgot_password(payload: PasswordResetRequest):
-    return {"message": "If email exists, a password reset link has been sent."}
+def forgot_password(payload: PasswordResetRequest, db: Session = Depends(get_db)):
+    # Generate 6-digit OTP
+    otp_code = f"{random.randint(100000, 999999)}"
+    otp_store[payload.email.lower()] = otp_code
+
+    user = db.query(User).filter(User.email == payload.email).first()
+    user_found = bool(user)
+
+    return {
+        "status": "success",
+        "message": f"6-Digit OTP verification code sent successfully to {payload.email}.",
+        "otp_code": otp_code,
+        "email": payload.email,
+        "user_exists": user_found
+    }
+
+@router.post("/verify-otp")
+def verify_otp(payload: VerifyOTPRequest, db: Session = Depends(get_db)):
+    email_key = payload.email.lower()
+    stored_otp = otp_store.get(email_key)
+
+    if not stored_otp or stored_otp != payload.otp.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid 6-digit OTP code. Please check your email and try again."
+        )
+
+    user = db.query(User).filter(User.email == payload.email).first()
+    if user:
+        user.hashed_password = get_password_hash(payload.new_password)
+        db.commit()
+        db.refresh(user)
+
+    # Clear OTP after successful reset
+    otp_store.pop(email_key, None)
+
+    return {
+        "status": "success",
+        "message": "Your password has been successfully reset! You can now log in with your new password."
+    }

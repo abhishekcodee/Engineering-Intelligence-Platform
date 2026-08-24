@@ -26,6 +26,11 @@ class PasswordResetConfirm(BaseModel):
     token: str
     new_password: str
 
+class VerifyOTPRequest(BaseModel):
+    email: EmailStr
+    otp: str
+    new_password: str
+
 class UserResponse(BaseModel):
     id: str
     email: EmailStr
