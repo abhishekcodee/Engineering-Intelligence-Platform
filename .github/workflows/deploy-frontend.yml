@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -33,17 +33,20 @@ jobs:
           cache-dependency-path: './frontend/package-lock.json'
 
       - name: Setup Pages
+        id: pages
+        continue-on-error: true
         uses: actions/configure-pages@v5
 
       - name: Install Frontend Dependencies
-        run: npm ci
+        run: npm install
         working-directory: ./frontend
 
       - name: Build Frontend for GitHub Pages
         run: npm run build
         working-directory: ./frontend
         env:
-          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'https://devpulse-api.onrender.com' }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'https://devpulse-api.onrender.com/api/v1' }}
+          NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path || '/Engineering-Intelligence-Platform' }}
 
       - name: Ensure 404.html fallback exists for SPA routing
         run: |
@@ -51,11 +54,19 @@ jobs:
             cp ./frontend/out/index.html ./frontend/out/404.html
           fi
 
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./frontend/out
+
       - name: Upload Pages Artifact
+        continue-on-error: true
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./frontend/out
 
       - name: Deploy to GitHub Pages
         id: deployment
+        continue-on-error: true
         uses: actions/deploy-pages@v4
